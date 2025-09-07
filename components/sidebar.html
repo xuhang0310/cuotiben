@@ -1,0 +1,98 @@
+<!-- 侧边栏筛选器组件 -->
+<aside class="ant-sider" id="filterSider">
+    <div class="sider-content">
+        <div class="sider-header">
+            <h3>筛选条件</h3>
+            <button class="sider-close" id="closeFilter">
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                    <path d="M12 4L4 12M4 4L12 12" stroke="#666" stroke-width="1.5" stroke-linecap="round"/>
+                </svg>
+            </button>
+        </div>
+        
+        <div class="filter-section">
+            <div class="filter-group">
+                <label class="filter-label">学科</label>
+                <div class="filter-options">
+                    <label class="ant-checkbox">
+                        <input type="checkbox" name="subject" value="all" checked>
+                        <span class="checkmark"></span>
+                        全部
+                    </label>
+                    <label class="ant-checkbox">
+                        <input type="checkbox" name="subject" value="math">
+                        <span class="checkmark"></span>
+                        数学
+                    </label>
+                    <label class="ant-checkbox">
+                        <input type="checkbox" name="subject" value="chinese">
+                        <span class="checkmark"></span>
+                        语文
+                    </label>
+                    <label class="ant-checkbox">
+                        <input type="checkbox" name="subject" value="english">
+                        <span class="checkmark"></span>
+                        英语
+                    </label>
+                    <label class="ant-checkbox">
+                        <input type="checkbox" name="subject" value="physics">
+                        <span class="checkmark"></span>
+                        物理
+                    </label>
+                </div>
+            </div>
+            
+            <div class="filter-group">
+                <label class="filter-label">难度</label>
+                <div class="filter-options">
+                    <label class="ant-checkbox">
+                        <input type="checkbox" name="difficulty" value="all" checked>
+                        <span class="checkmark"></span>
+                        全部
+                    </label>
+                    <label class="ant-checkbox">
+                        <input type="checkbox" name="difficulty" value="easy">
+                        <span class="checkmark"></span>
+                        简单
+                    </label>
+                    <label class="ant-checkbox">
+                        <input type="checkbox" name="difficulty" value="medium">
+                        <span class="checkmark"></span>
+                        中等
+                    </label>
+                    <label class="ant-checkbox">
+                        <input type="checkbox" name="difficulty" value="hard">
+                        <span class="checkmark"></span>
+                        困难
+                    </label>
+                </div>
+            </div>
+            
+            <div class="filter-group">
+                <label class="filter-label">掌握度</label>
+                <div class="filter-options">
+                    <label class="ant-checkbox">
+                        <input type="checkbox" name="mastery" value="all" checked>
+                        <span class="checkmark"></span>
+                        全部
+                    </label>
+                    <label class="ant-checkbox">
+                        <input type="checkbox" name="mastery" value="need-review">
+                        <span class="checkmark"></span>
+                        待复习
+                    </label>
+                    <label class="ant-checkbox">
+                        <input type="checkbox" name="mastery" value="mastered">
+                        <span class="checkmark"></span>
+                        已掌握
+                    </label>
+                </div>
+            </div>
+        </div>
+        
+        <div class="filter-actions">
+            <button class="ant-btn ant-btn-default">重置</button>
+            <button class="ant-btn ant-btn-primary">应用</button>
+        </div>
+    </div>
+</aside>

@@ -1,0 +1,468 @@
+<!-- 艾宾浩斯日历页面 -->
+<div id="calendar" class="ant-page">
+    <div class="page-header">
+        <h2 class="page-title">艾宾浩斯复习日历</h2>
+        <div class="page-actions">
+            <button class="ant-btn ant-btn-default" id="todayBtn">
+                <i class="fas fa-calendar-day"></i>
+                今天
+            </button>
+            <button class="ant-btn ant-btn-primary" id="addPlanBtn">
+                <i class="fas fa-plus"></i>
+                添加计划
+            </button>
+        </div>
+    </div>
+    
+    <div class="calendar-container">
+        <!-- 日历导航 -->
+        <div class="calendar-nav">
+            <button class="nav-btn" id="prevMonth">
+                <i class="fas fa-chevron-left"></i>
+            </button>
+            <div class="current-month" id="currentMonth">
+                2024年1月
+            </div>
+            <button class="nav-btn" id="nextMonth">
+                <i class="fas fa-chevron-right"></i>
+            </button>
+        </div>
+        
+        <!-- 复习统计 -->
+        <div class="review-stats">
+            <div class="stat-item">
+                <div class="stat-icon">📚</div>
+                <div class="stat-content">
+                    <div class="stat-number">15</div>
+                    <div class="stat-label">今日复习</div>
+                </div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-icon">✅</div>
+                <div class="stat-content">
+                    <div class="stat-number">12</div>
+                    <div class="stat-label">已完成</div>
+                </div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-icon">⏰</div>
+                <div class="stat-content">
+                    <div class="stat-number">3</div>
+                    <div class="stat-label">待复习</div>
+                </div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-icon">🔥</div>
+                <div class="stat-content">
+                    <div class="stat-number">7</div>
+                    <div class="stat-label">连续天数</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 日历主体 -->
+        <div class="calendar-main">
+            <div class="calendar-grid">
+                <!-- 星期标题 -->
+                <div class="weekdays">
+                    <div class="weekday">日</div>
+                    <div class="weekday">一</div>
+                    <div class="weekday">二</div>
+                    <div class="weekday">三</div>
+                    <div class="weekday">四</div>
+                    <div class="weekday">五</div>
+                    <div class="weekday">六</div>
+                </div>
+                
+                <!-- 日期网格 -->
+                <div class="days-grid" id="daysGrid">
+                    <!-- 上月末尾日期 -->
+                    <div class="day other-month">29</div>
+                    <div class="day other-month">30</div>
+                    <div class="day other-month">31</div>
+                    
+                    <!-- 当月日期 -->
+                    <div class="day" data-date="2024-01-01">
+                        <div class="day-number">1</div>
+                        <div class="day-tasks">
+                            <div class="task-dot task-review"></div>
+                        </div>
+                    </div>
+                    <div class="day" data-date="2024-01-02">
+                        <div class="day-number">2</div>
+                        <div class="day-tasks">
+                            <div class="task-dot task-new"></div>
+                            <div class="task-dot task-review"></div>
+                        </div>
+                    </div>
+                    <div class="day" data-date="2024-01-03">
+                        <div class="day-number">3</div>
+                        <div class="day-tasks">
+                            <div class="task-dot task-completed"></div>
+                        </div>
+                    </div>
+                    <div class="day" data-date="2024-01-04">
+                        <div class="day-number">4</div>
+                    </div>
+                    <div class="day" data-date="2024-01-05">
+                        <div class="day-number">5</div>
+                        <div class="day-tasks">
+                            <div class="task-dot task-review"></div>
+                            <div class="task-dot task-review"></div>
+                        </div>
+                    </div>
+                    <div class="day" data-date="2024-01-06">
+                        <div class="day-number">6</div>
+                    </div>
+                    <div class="day" data-date="2024-01-07">
+                        <div class="day-number">7</div>
+                        <div class="day-tasks">
+                            <div class="task-dot task-new"></div>
+                        </div>
+                    </div>
+                    
+                    <!-- 继续生成更多日期... -->
+                    <div class="day" data-date="2024-01-08">
+                        <div class="day-number">8</div>
+                    </div>
+                    <div class="day" data-date="2024-01-09">
+                        <div class="day-number">9</div>
+                        <div class="day-tasks">
+                            <div class="task-dot task-review"></div>
+                        </div>
+                    </div>
+                    <div class="day" data-date="2024-01-10">
+                        <div class="day-number">10</div>
+                        <div class="day-tasks">
+                            <div class="task-dot task-completed"></div>
+                            <div class="task-dot task-completed"></div>
+                        </div>
+                    </div>
+                    <div class="day" data-date="2024-01-11">
+                        <div class="day-number">11</div>
+                    </div>
+                    <div class="day" data-date="2024-01-12">
+                        <div class="day-number">12</div>
+                        <div class="day-tasks">
+                            <div class="task-dot task-new"></div>
+                            <div class="task-dot task-review"></div>
+                        </div>
+                    </div>
+                    <div class="day today" data-date="2024-01-13">
+                        <div class="day-number">13</div>
+                        <div class="day-tasks">
+                            <div class="task-dot task-review"></div>
+                            <div class="task-dot task-review"></div>
+                            <div class="task-dot task-new"></div>
+                        </div>
+                    </div>
+                    <div class="day" data-date="2024-01-14">
+                        <div class="day-number">14</div>
+                    </div>
+                    
+                    <!-- 继续到月末... -->
+                    <div class="day" data-date="2024-01-15">
+                        <div class="day-number">15</div>
+                        <div class="day-tasks">
+                            <div class="task-dot task-review"></div>
+                        </div>
+                    </div>
+                    <!-- 省略其他日期以节省空间 -->
+                    <div class="day" data-date="2024-01-31">
+                        <div class="day-number">31</div>
+                    </div>
+                    
+                    <!-- 下月开始日期 -->
+                    <div class="day other-month">1</div>
+                    <div class="day other-month">2</div>
+                    <div class="day other-month">3</div>
+                </div>
+            </div>
+            
+            <!-- 日程详情侧栏 -->
+            <div class="schedule-sidebar">
+                <div class="sidebar-header">
+                    <h3>今日复习计划</h3>
+                    <span class="date-info">1月13日 周六</span>
+                </div>
+                
+                <div class="schedule-list">
+                    <div class="schedule-item">
+                        <div class="schedule-time">09:00</div>
+                        <div class="schedule-content">
+                            <div class="schedule-title">数学 - 函数与导数</div>
+                            <div class="schedule-desc">第1次复习 (新学习)</div>
+                            <div class="schedule-questions">5道题目</div>
+                        </div>
+                        <div class="schedule-status status-pending">
+                            <i class="fas fa-clock"></i>
+                        </div>
+                    </div>
+                    
+                    <div class="schedule-item">
+                        <div class="schedule-time">10:30</div>
+                        <div class="schedule-content">
+                            <div class="schedule-title">物理 - 电磁感应</div>
+                            <div class="schedule-desc">第2次复习 (1天后)</div>
+                            <div class="schedule-questions">3道题目</div>
+                        </div>
+                        <div class="schedule-status status-completed">
+                            <i class="fas fa-check"></i>
+                        </div>
+                    </div>
+                    
+                    <div class="schedule-item">
+                        <div class="schedule-time">14:00</div>
+                        <div class="schedule-content">
+                            <div class="schedule-title">化学 - 有机化学</div>
+                            <div class="schedule-desc">第3次复习 (2天后)</div>
+                            <div class="schedule-questions">4道题目</div>
+                        </div>
+                        <div class="schedule-status status-completed">
+                            <i class="fas fa-check"></i>
+                        </div>
+                    </div>
+                    
+                    <div class="schedule-item">
+                        <div class="schedule-time">16:00</div>
+                        <div class="schedule-content">
+                            <div class="schedule-title">生物 - 遗传学</div>
+                            <div class="schedule-desc">第4次复习 (4天后)</div>
+                            <div class="schedule-questions">6道题目</div>
+                        </div>
+                        <div class="schedule-status status-pending">
+                            <i class="fas fa-clock"></i>
+                        </div>
+                    </div>
+                    
+                    <div class="schedule-item">
+                        <div class="schedule-time">19:00</div>
+                        <div class="schedule-content">
+                            <div class="schedule-title">数学 - 立体几何</div>
+                            <div class="schedule-desc">第5次复习 (7天后)</div>
+                            <div class="schedule-questions">2道题目</div>
+                        </div>
+                        <div class="schedule-status status-pending">
+                            <i class="fas fa-clock"></i>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="sidebar-actions">
+                    <button class="action-btn primary" onclick="startTodayReview()">
+                        <i class="fas fa-play"></i>
+                        开始复习
+                    </button>
+                    <button class="action-btn" onclick="markAllCompleted()">
+                        <i class="fas fa-check-double"></i>
+                        全部完成
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 复习规律说明 -->
+        <div class="ebbinghaus-info">
+            <h3>艾宾浩斯遗忘曲线复习规律</h3>
+            <div class="review-timeline">
+                <div class="timeline-item">
+                    <div class="timeline-dot first">1</div>
+                    <div class="timeline-content">
+                        <div class="timeline-title">第1次复习</div>
+                        <div class="timeline-desc">学习后立即复习</div>
+                    </div>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-dot second">2</div>
+                    <div class="timeline-content">
+                        <div class="timeline-title">第2次复习</div>
+                        <div class="timeline-desc">1天后</div>
+                    </div>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-dot third">3</div>
+                    <div class="timeline-content">
+                        <div class="timeline-title">第3次复习</div>
+                        <div class="timeline-desc">2天后</div>
+                    </div>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-dot fourth">4</div>
+                    <div class="timeline-content">
+                        <div class="timeline-title">第4次复习</div>
+                        <div class="timeline-desc">4天后</div>
+                    </div>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-dot fifth">5</div>
+                    <div class="timeline-content">
+                        <div class="timeline-title">第5次复习</div>
+                        <div class="timeline-desc">7天后</div>
+                    </div>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-dot sixth">6</div>
+                    <div class="timeline-content">
+                        <div class="timeline-title">第6次复习</div>
+                        <div class="timeline-desc">15天后</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 添加计划模态框 -->
+    <div class="modal" id="addPlanModal" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>添加复习计划</h3>
+                <button class="modal-close" onclick="closeAddPlanModal()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>选择题目：</label>
+                    <select class="ant-select" id="questionSelect">
+                        <option value="">请选择题目</option>
+                        <option value="q001">数学 - 函数与导数 #001</option>
+                        <option value="q002">物理 - 电磁感应 #002</option>
+                        <option value="q003">化学 - 有机化学 #003</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>开始日期：</label>
+                    <input type="date" class="ant-input" id="startDate">
+                </div>
+                <div class="form-group">
+                    <label>复习时间：</label>
+                    <input type="time" class="ant-input" id="reviewTime">
+                </div>
+                <div class="form-group">
+                    <label>备注：</label>
+                    <textarea class="ant-input" id="planNote" placeholder="添加备注信息..."></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="ant-btn ant-btn-default" onclick="closeAddPlanModal()">取消</button>
+                <button class="ant-btn ant-btn-primary" onclick="savePlan()">保存</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// 页面初始化
+document.addEventListener('DOMContentLoaded', function() {
+    initCalendarPage();
+});
+
+function initCalendarPage() {
+    bindCalendarEvents();
+    loadCalendarData();
+    highlightToday();
+}
+
+function bindCalendarEvents() {
+    // 月份导航
+    const prevBtn = document.getElementById('prevMonth');
+    const nextBtn = document.getElementById('nextMonth');
+    
+    if (prevBtn) {
+        prevBtn.addEventListener('click', () => changeMonth(-1));
+    }
+    
+    if (nextBtn) {
+        nextBtn.addEventListener('click', () => changeMonth(1));
+    }
+    
+    // 今天按钮
+    const todayBtn = document.getElementById('todayBtn');
+    if (todayBtn) {
+        todayBtn.addEventListener('click', goToToday);
+    }
+    
+    // 添加计划按钮
+    const addPlanBtn = document.getElementById('addPlanBtn');
+    if (addPlanBtn) {
+        addPlanBtn.addEventListener('click', () => {
+            document.getElementById('addPlanModal').style.display = 'flex';
+        });
+    }
+    
+    // 日期点击事件
+    const days = document.querySelectorAll('.day[data-date]');
+    days.forEach(day => {
+        day.addEventListener('click', function() {
+            selectDate(this.dataset.date);
+        });
+    });
+}
+
+function loadCalendarData() {
+    // 模拟加载日历数据
+    console.log('Loading calendar data...');
+}
+
+function highlightToday() {
+    const today = new Date();
+    const todayStr = today.toISOString().split('T')[0];
+    const todayElement = document.querySelector(`[data-date="${todayStr}"]`);
+    
+    if (todayElement) {
+        todayElement.classList.add('today');
+    }
+}
+
+function changeMonth(direction) {
+    console.log('Changing month:', direction);
+    // 实现月份切换逻辑
+}
+
+function goToToday() {
+    console.log('Going to today...');
+    // 跳转到今天
+}
+
+function selectDate(date) {
+    console.log('Selected date:', date);
+    // 选择日期，更新侧栏内容
+    
+    // 移除之前的选中状态
+    document.querySelectorAll('.day.selected').forEach(day => {
+        day.classList.remove('selected');
+    });
+    
+    // 添加新的选中状态
+    const selectedDay = document.querySelector(`[data-date="${date}"]`);
+    if (selectedDay) {
+        selectedDay.classList.add('selected');
+    }
+}
+
+function startTodayReview() {
+    console.log('Starting today review...');
+    // 开始今日复习
+}
+
+function markAllCompleted() {
+    console.log('Marking all as completed...');
+    // 标记全部完成
+}
+
+function closeAddPlanModal() {
+    document.getElementById('addPlanModal').style.display = 'none';
+}
+
+function savePlan() {
+    const question = document.getElementById('questionSelect').value;
+    const startDate = document.getElementById('startDate').value;
+    const reviewTime = document.getElementById('reviewTime').value;
+    const note = document.getElementById('planNote').value;
+    
+    console.log('Saving plan:', { question, startDate, reviewTime, note });
+    
+    // 保存计划逻辑
+    closeAddPlanModal();
+}
+</script>

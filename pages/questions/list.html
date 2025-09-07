@@ -1,0 +1,177 @@
+<!-- 错题列表页面 -->
+<div id="questions" class="ant-page active">
+    <div class="page-header">
+        <h2 class="page-title">错题列表</h2>
+        <div class="page-actions">
+            <button class="filter-toggle" id="openFilter">
+                <i class="fas fa-filter"></i>
+                筛选
+            </button>
+            <button class="ant-btn ant-btn-primary" id="addQuestionBtn">
+                <i class="fas fa-plus"></i>
+                新增错题
+            </button>
+        </div>
+    </div>
+    
+    <div class="toolbar">
+        <div class="toolbar-left">
+            <!-- AntD Segmented组件 -->
+            <div class="ant-segmented">
+                <div class="ant-segmented-group">
+                    <div class="ant-segmented-item ant-segmented-item-selected" data-sort="nextReview">
+                        <div class="ant-segmented-item-label">下次复习</div>
+                    </div>
+                    <div class="ant-segmented-item" data-sort="recentAdded">
+                        <div class="ant-segmented-item-label">最近添加</div>
+                    </div>
+                    <div class="ant-segmented-item" data-sort="mastery">
+                        <div class="ant-segmented-item-label">掌握度</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="view-toggle">
+                <button class="view-btn active" data-view="grid">
+                    <i class="fas fa-th"></i>
+                    网格
+                </button>
+                <button class="view-btn" data-view="list">
+                    <i class="fas fa-list"></i>
+                    列表
+                </button>
+            </div>
+            
+            <button class="ant-btn ant-btn-default" id="toggleInstructions" style="margin-left: 12px;">
+                <i class="fas fa-info-circle"></i>
+                使用说明
+            </button>
+        </div>
+        
+        <div class="toolbar-right">
+            <div class="page-extra">共 <span id="totalQuestions">247</span> 道错题，已掌握 <span id="masteredQuestions">189</span> 道</div>
+        </div>
+    </div>
+    
+    <!-- 使用说明 -->
+    <div class="usage-instructions" id="usageInstructions" style="background: var(--ant-primary-light); border-radius: var(--ant-border-radius); padding: 16px; margin-bottom: 16px; display: none;">
+        <h4 style="margin-top: 0; color: var(--ant-primary);">使用说明</h4>
+        <ul style="margin: 0; padding-left: 20px;">
+            <li>鼠标悬停在卡片上可查看题号和下次复习日期</li>
+            <li>点击卡片可查看错题详情</li>
+            <li>使用顶部筛选器可按学科、难度等条件筛选错题</li>
+            <li>通过排序选项可按不同方式排列错题</li>
+            <li>掌握度显示：已掌握（绿色角标）、待加强（薄荷绿进度条）、未复习（灰色进度条）</li>
+        </ul>
+    </div>
+    
+    <div class="questions-grid">
+        <!-- 错题卡片将通过JavaScript动态生成 -->
+    </div>
+    
+    <!-- 分页器容器 -->
+    <div id="pagination-container"></div>
+</div>
+
+<script>
+// 页面加载完成后初始化
+document.addEventListener('DOMContentLoaded', function() {
+    // 加载分页组件
+    loadComponent('pagination-container', 'components/pagination.html');
+    
+    // 初始化页面功能
+    initQuestionsPage();
+});
+
+function initQuestionsPage() {
+    // 绑定事件监听器
+    bindEventListeners();
+    
+    // 加载错题数据
+    loadQuestions();
+}
+
+function bindEventListeners() {
+    // 筛选按钮
+    const openFilterBtn = document.getElementById('openFilter');
+    if (openFilterBtn) {
+        openFilterBtn.addEventListener('click', () => {
+            document.getElementById('filterSider').classList.add('open');
+            document.getElementById('overlay').classList.add('active');
+        });
+    }
+    
+    // 新增错题按钮
+    const addQuestionBtn = document.getElementById('addQuestionBtn');
+    if (addQuestionBtn) {
+        addQuestionBtn.addEventListener('click', () => {
+            window.location.href = 'pages/question-add.html';
+        });
+    }
+    
+    // 使用说明切换
+    const toggleInstructionsBtn = document.getElementById('toggleInstructions');
+    const usageInstructions = document.getElementById('usageInstructions');
+    if (toggleInstructionsBtn && usageInstructions) {
+        toggleInstructionsBtn.addEventListener('click', () => {
+            const isVisible = usageInstructions.style.display !== 'none';
+            usageInstructions.style.display = isVisible ? 'none' : 'block';
+        });
+    }
+    
+    // 排序切换
+    const segmentedItems = document.querySelectorAll('.ant-segmented-item');
+    segmentedItems.forEach(item => {
+        item.addEventListener('click', () => {
+            segmentedItems.forEach(i => i.classList.remove('ant-segmented-item-selected'));
+            item.classList.add('ant-segmented-item-selected');
+            
+            const sortType = item.dataset.sort;
+            sortQuestions(sortType);
+        });
+    });
+    
+    // 视图切换
+    const viewBtns = document.querySelectorAll('.view-btn');
+    viewBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+            viewBtns.forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            
+            const viewType = btn.dataset.view;
+            switchView(viewType);
+        });
+    });
+}
+
+function loadQuestions() {
+    // 这里应该调用 DataManager 来获取数据
+    // 暂时使用模拟数据
+    const questionsGrid = document.querySelector('.questions-grid');
+    if (questionsGrid && window.dataManager) {
+        const questions = window.dataManager.getAllQuestions();
+        renderQuestions(questions);
+    }
+}
+
+function renderQuestions(questions) {
+    // 渲染错题卡片
+    // 这里应该调用 UIRenderer 来渲染
+    if (window.uiRenderer) {
+        window.uiRenderer.renderQuestions(questions);
+    }
+}
+
+function sortQuestions(sortType) {
+    // 排序逻辑
+    console.log('Sorting by:', sortType);
+}
+
+function switchView(viewType) {
+    // 视图切换逻辑
+    const questionsGrid = document.querySelector('.questions-grid');
+    if (questionsGrid) {
+        questionsGrid.className = viewType === 'grid' ? 'questions-grid' : 'questions-list';
+    }
+}
+</script>

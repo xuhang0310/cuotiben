@@ -1,0 +1,135 @@
+<!-- 艾宾浩斯复习日历页面 -->
+<div id="ebbinghaus-calendar" class="ant-page">
+    <div class="page-header">
+        <h2 class="page-title">复习日历</h2>
+        <div class="page-actions">
+            <button class="ant-btn ant-btn-default" id="todayBtn">
+                <i class="fas fa-calendar-day"></i>
+                今天
+            </button>
+            <button class="ant-btn ant-btn-primary" id="addReviewBtn">
+                <i class="fas fa-plus"></i>
+                添加复习计划
+            </button>
+        </div>
+    </div>
+    
+    <div class="calendar-toolbar">
+        <div class="calendar-nav">
+            <button class="nav-btn" id="prevMonth">
+                <i class="fas fa-chevron-left"></i>
+            </button>
+            <h3 class="current-month" id="currentMonth">2024年1月</h3>
+            <button class="nav-btn" id="nextMonth">
+                <i class="fas fa-chevron-right"></i>
+            </button>
+        </div>
+        
+        <div class="view-options">
+            <div class="ant-segmented">
+                <div class="ant-segmented-group">
+                    <div class="ant-segmented-item ant-segmented-item-selected" data-view="month">
+                        <div class="ant-segmented-item-label">月视图</div>
+                    </div>
+                    <div class="ant-segmented-item" data-view="week">
+                        <div class="ant-segmented-item-label">周视图</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 复习统计卡片 -->
+    <div class="review-stats">
+        <div class="stat-card">
+            <div class="stat-icon">
+                <i class="fas fa-calendar-check" style="color: #52c41a;"></i>
+            </div>
+            <div class="stat-content">
+                <div class="stat-number" id="todayReviews">0</div>
+                <div class="stat-label">今日复习</div>
+            </div>
+        </div>
+        
+        <div class="stat-card">
+            <div class="stat-icon">
+                <i class="fas fa-clock" style="color: #faad14;"></i>
+            </div>
+            <div class="stat-content">
+                <div class="stat-number" id="pendingReviews">0</div>
+                <div class="stat-label">待复习</div>
+            </div>
+        </div>
+        
+        <div class="stat-card">
+            <div class="stat-icon">
+                <i class="fas fa-fire" style="color: #f5222d;"></i>
+            </div>
+            <div class="stat-content">
+                <div class="stat-number" id="streakDays">0</div>
+                <div class="stat-label">连续天数</div>
+            </div>
+        </div>
+        
+        <div class="stat-card">
+            <div class="stat-icon">
+                <i class="fas fa-chart-line" style="color: #1890ff;"></i>
+            </div>
+            <div class="stat-content">
+                <div class="stat-number" id="completionRate">0%</div>
+                <div class="stat-label">完成率</div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 日历主体 -->
+    <div class="calendar-container">
+        <div class="calendar-grid" id="calendarGrid">
+            <!-- 日历将通过JavaScript动态生成 -->
+        </div>
+    </div>
+    
+    <!-- 今日复习任务面板 -->
+    <div class="today-panel" id="todayPanel">
+        <div class="panel-header">
+            <h4>今日复习任务</h4>
+            <button class="panel-close" id="closeTodayPanel">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        
+        <div class="panel-content">
+            <div class="review-tasks" id="reviewTasks">
+                <!-- 复习任务列表 -->
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 复习详情模态框 -->
+<div class="ant-modal" id="reviewDetailModal" style="display: none;">
+    <div class="ant-modal-mask"></div>
+    <div class="ant-modal-wrap">
+        <div class="ant-modal-content">
+            <div class="ant-modal-header">
+                <div class="ant-modal-title">复习详情</div>
+                <button class="ant-modal-close" id="closeReviewModal">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="ant-modal-body" id="reviewDetailContent">
+                <!-- 复习详情内容 -->
+            </div>
+            <div class="ant-modal-footer">
+                <button class="ant-btn ant-btn-default" id="markCompleteBtn">
+                    <i class="fas fa-check"></i>
+                    标记完成
+                </button>
+                <button class="ant-btn ant-btn-primary" id="startReviewBtn">
+                    <i class="fas fa-play"></i>
+                    开始复习
+                </button>
+            </div>
+        </div>
+    </div>
+</div>

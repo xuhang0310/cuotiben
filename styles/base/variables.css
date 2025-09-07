@@ -1,0 +1,201 @@
+/* CSS变量定义 - 设计系统 */
+
+/* Ant Design 颜色体系 */
+:root {
+  /* 主色调 */
+  --primary-color: #1890ff;
+  --primary-color-hover: #40a9ff;
+  --primary-color-active: #096dd9;
+  --primary-color-light: #e6f7ff;
+  
+  /* 成功色 */
+  --success-color: #52c41a;
+  --success-color-hover: #73d13d;
+  --success-color-active: #389e0d;
+  --success-color-light: #f6ffed;
+  
+  /* 警告色 */
+  --warning-color: #faad14;
+  --warning-color-hover: #ffc53d;
+  --warning-color-active: #d48806;
+  --warning-color-light: #fffbe6;
+  
+  /* 错误色 */
+  --error-color: #f5222d;
+  --error-color-hover: #ff4d4f;
+  --error-color-active: #cf1322;
+  --error-color-light: #fff2f0;
+  
+  /* 信息色 */
+  --info-color: #1890ff;
+  --info-color-hover: #40a9ff;
+  --info-color-active: #096dd9;
+  --info-color-light: #e6f7ff;
+}
+
+/* 学科颜色体系 */
+:root {
+  --subject-math: #1890ff;      /* 数学 - 蓝色 */
+  --subject-physics: #722ed1;   /* 物理 - 紫色 */
+  --subject-chemistry: #13c2c2; /* 化学 - 青色 */
+  --subject-biology: #52c41a;   /* 生物 - 绿色 */
+  --subject-chinese: #fa541c;   /* 语文 - 橙色 */
+  --subject-english: #eb2f96;   /* 英语 - 粉色 */
+  --subject-history: #faad14;   /* 历史 - 黄色 */
+  --subject-geography: #2f54eb; /* 地理 - 深蓝 */
+  --subject-politics: #f5222d;  /* 政治 - 红色 */
+}
+
+/* UI规范颜色 */
+:root {
+  /* 文本颜色 */
+  --text-color-primary: rgba(0, 0, 0, 0.85);
+  --text-color-secondary: rgba(0, 0, 0, 0.65);
+  --text-color-disabled: rgba(0, 0, 0, 0.25);
+  --text-color-inverse: #fff;
+  
+  /* 背景颜色 */
+  --background-color-base: #f0f2f5;
+  --background-color-light: #fafafa;
+  --background-color-white: #fff;
+  
+  /* 边框颜色 */
+  --border-color-base: #d9d9d9;
+  --border-color-split: #f0f0f0;
+  --border-color-light: #e8e8e8;
+  
+  /* 阴影 */
+  --box-shadow-base: 0 3px 6px -4px rgba(0, 0, 0, 0.12), 0 6px 16px 0 rgba(0, 0, 0, 0.08), 0 9px 28px 8px rgba(0, 0, 0, 0.05);
+  --box-shadow-card: 0 1px 2px -2px rgba(0, 0, 0, 0.16), 0 3px 6px 0 rgba(0, 0, 0, 0.12), 0 5px 12px 4px rgba(0, 0, 0, 0.09);
+}
+
+/* 尺寸规范 */
+:root {
+  /* 间距 */
+  --spacing-xs: 4px;
+  --spacing-sm: 8px;
+  --spacing-md: 16px;
+  --spacing-lg: 24px;
+  --spacing-xl: 32px;
+  --spacing-xxl: 48px;
+  
+  /* 圆角 */
+  --border-radius-sm: 2px;
+  --border-radius-base: 6px;
+  --border-radius-lg: 8px;
+  
+  /* 字体大小 */
+  --font-size-sm: 12px;
+  --font-size-base: 14px;
+  --font-size-lg: 16px;
+  --font-size-xl: 20px;
+  --font-size-xxl: 24px;
+  
+  /* 行高 */
+  --line-height-base: 1.5715;
+  --line-height-sm: 1.5;
+  --line-height-lg: 1.6;
+  
+  /* 字重 */
+  --font-weight-normal: 400;
+  --font-weight-medium: 500;
+  --font-weight-bold: 600;
+}
+
+/* 动画时长 */
+:root {
+  --animation-duration-slow: 0.3s;
+  --animation-duration-base: 0.2s;
+  --animation-duration-fast: 0.1s;
+  
+  --ease-base-out: cubic-bezier(0.7, 0.3, 0.1, 0.7);
+  --ease-base-in: cubic-bezier(0.9, 0, 0.3, 0.7);
+  --ease-out: cubic-bezier(0.215, 0.61, 0.355, 1);
+  --ease-in: cubic-bezier(0.55, 0.055, 0.675, 0.19);
+  --ease-in-out: cubic-bezier(0.645, 0.045, 0.355, 1);
+}
+
+/* 布局尺寸 */
+:root {
+  /* 头部高度 */
+  --header-height: 64px;
+  
+  /* 侧边栏宽度 */
+  --sidebar-width: 280px;
+  --sidebar-collapsed-width: 80px;
+  
+  /* 内容区域 */
+  --content-max-width: 1200px;
+  --content-padding: 24px;
+  
+  /* 卡片间距 */
+  --card-padding: 24px;
+  --card-margin: 16px;
+}
+
+/* 响应式断点 */
+:root {
+  --screen-xs: 480px;
+  --screen-sm: 576px;
+  --screen-md: 768px;
+  --screen-lg: 992px;
+  --screen-xl: 1200px;
+  --screen-xxl: 1600px;
+}
+
+/* Z-index 层级 */
+:root {
+  --z-index-base: 0;
+  --z-index-affix: 10;
+  --z-index-back-top: 10;
+  --z-index-picker-panel: 10;
+  --z-index-popup-close: 10;
+  --z-index-modal: 1000;
+  --z-index-drawer: 1000;
+  --z-index-popover: 1030;
+  --z-index-dropdown: 1050;
+  --z-index-tooltip: 1060;
+  --z-index-notification: 1010;
+  --z-index-message: 1010;
+}
+
+/* 状态颜色 */
+:root {
+  /* 掌握度颜色 */
+  --mastery-unknown: #bfbfbf;
+  --mastery-poor: #f5222d;
+  --mastery-fair: #faad14;
+  --mastery-good: #52c41a;
+  --mastery-excellent: #1890ff;
+  
+  /* 难度颜色 */
+  --difficulty-easy: #52c41a;
+  --difficulty-medium: #faad14;
+  --difficulty-hard: #f5222d;
+  
+  /* 题目类型颜色 */
+  --type-choice: #1890ff;
+  --type-blank: #722ed1;
+  --type-essay: #fa541c;
+  --type-calculation: #13c2c2;
+}
+
+/* 深色模式变量 */
+@media (prefers-color-scheme: dark) {
+  :root {
+    /* 文本颜色 */
+    --text-color-primary: rgba(255, 255, 255, 0.85);
+    --text-color-secondary: rgba(255, 255, 255, 0.65);
+    --text-color-disabled: rgba(255, 255, 255, 0.25);
+    
+    /* 背景颜色 */
+    --background-color-base: #141414;
+    --background-color-light: #1f1f1f;
+    --background-color-white: #262626;
+    
+    /* 边框颜色 */
+    --border-color-base: #434343;
+    --border-color-split: #303030;
+    --border-color-light: #3a3a3a;
+  }
+}

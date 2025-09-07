@@ -1,0 +1,380 @@
+<!-- 重复题簇页面 -->
+<div id="clusters" class="ant-page">
+    <div class="page-header">
+        <h2 class="page-title">重复题簇分析</h2>
+        <div class="page-actions">
+            <button class="ant-btn ant-btn-default" id="refreshClusters">
+                <i class="fas fa-sync-alt"></i>
+                刷新分析
+            </button>
+            <button class="ant-btn ant-btn-primary" id="exportClusters">
+                <i class="fas fa-download"></i>
+                导出报告
+            </button>
+        </div>
+    </div>
+    
+    <div class="clusters-container">
+        <!-- 统计概览 -->
+        <div class="clusters-stats">
+            <div class="stat-card">
+                <div class="stat-icon">🔗</div>
+                <div class="stat-content">
+                    <div class="stat-number">12</div>
+                    <div class="stat-label">题簇数量</div>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">📊</div>
+                <div class="stat-content">
+                    <div class="stat-number">68</div>
+                    <div class="stat-label">关联题目</div>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">🎯</div>
+                <div class="stat-content">
+                    <div class="stat-number">85%</div>
+                    <div class="stat-label">相似度</div>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">⚡</div>
+                <div class="stat-content">
+                    <div class="stat-number">24</div>
+                    <div class="stat-label">重点题簇</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 筛选控制 -->
+        <div class="clusters-filters">
+            <div class="filter-group">
+                <label>学科筛选：</label>
+                <select class="ant-select" id="subjectFilter">
+                    <option value="">全部学科</option>
+                    <option value="math">数学</option>
+                    <option value="physics">物理</option>
+                    <option value="chemistry">化学</option>
+                    <option value="biology">生物</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label>相似度：</label>
+                <select class="ant-select" id="similarityFilter">
+                    <option value="">全部</option>
+                    <option value="high">高相似度 (>80%)</option>
+                    <option value="medium">中等相似度 (60-80%)</option>
+                    <option value="low">低相似度 (<60%)</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label>题簇大小：</label>
+                <select class="ant-select" id="sizeFilter">
+                    <option value="">全部</option>
+                    <option value="large">大题簇 (>5题)</option>
+                    <option value="medium">中等题簇 (3-5题)</option>
+                    <option value="small">小题簇 (2题)</option>
+                </select>
+            </div>
+        </div>
+        
+        <!-- 可视化图表区域 -->
+        <div class="visualization-container">
+            <div class="chart-header">
+                <h3>题簇关系图</h3>
+                <div class="chart-controls">
+                    <button class="chart-btn active" data-view="network">网络图</button>
+                    <button class="chart-btn" data-view="tree">树状图</button>
+                    <button class="chart-btn" data-view="matrix">矩阵图</button>
+                </div>
+            </div>
+            <div class="chart-container">
+                <div id="forceGraph" class="force-graph">
+                    <!-- 力导向图将在这里渲染 -->
+                    <svg width="100%" height="400">
+                        <!-- 示例节点和连线 -->
+                        <defs>
+                            <marker id="arrowhead" markerWidth="10" markerHeight="7" 
+                                    refX="9" refY="3.5" orient="auto">
+                                <polygon points="0 0, 10 3.5, 0 7" fill="#666" />
+                            </marker>
+                        </defs>
+                        
+                        <!-- 连线 -->
+                        <line x1="150" y1="100" x2="250" y2="150" stroke="#1890ff" stroke-width="2" marker-end="url(#arrowhead)"/>
+                        <line x1="250" y1="150" x2="350" y2="100" stroke="#1890ff" stroke-width="2" marker-end="url(#arrowhead)"/>
+                        <line x1="150" y1="100" x2="200" y2="250" stroke="#52c41a" stroke-width="3" marker-end="url(#arrowhead)"/>
+                        <line x1="350" y1="100" x2="400" y2="200" stroke="#faad14" stroke-width="2" marker-end="url(#arrowhead)"/>
+                        
+                        <!-- 节点 -->
+                        <circle cx="150" cy="100" r="20" fill="#1890ff" stroke="#fff" stroke-width="2"/>
+                        <circle cx="250" cy="150" r="25" fill="#52c41a" stroke="#fff" stroke-width="2"/>
+                        <circle cx="350" cy="100" r="20" fill="#1890ff" stroke="#fff" stroke-width="2"/>
+                        <circle cx="200" cy="250" r="30" fill="#f5222d" stroke="#fff" stroke-width="2"/>
+                        <circle cx="400" cy="200" r="15" fill="#faad14" stroke="#fff" stroke-width="2"/>
+                        
+                        <!-- 标签 -->
+                        <text x="150" y="105" text-anchor="middle" fill="white" font-size="12">C1</text>
+                        <text x="250" y="155" text-anchor="middle" fill="white" font-size="12">C2</text>
+                        <text x="350" y="105" text-anchor="middle" fill="white" font-size="12">C3</text>
+                        <text x="200" y="255" text-anchor="middle" fill="white" font-size="12">C4</text>
+                        <text x="400" y="205" text-anchor="middle" fill="white" font-size="12">C5</text>
+                    </svg>
+                    
+                    <div class="graph-legend">
+                        <div class="legend-item">
+                            <div class="legend-color" style="background: #1890ff;"></div>
+                            <span>普通题簇</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-color" style="background: #52c41a;"></div>
+                            <span>重点题簇</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-color" style="background: #f5222d;"></div>
+                            <span>难点题簇</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-color" style="background: #faad14;"></div>
+                            <span>易错题簇</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 题簇列表 -->
+        <div class="clusters-list">
+            <div class="list-header">
+                <h3>题簇详情</h3>
+                <div class="list-controls">
+                    <input type="text" class="search-input" placeholder="搜索题簇..." id="clusterSearch">
+                    <button class="sort-btn" id="sortBtn">
+                        <i class="fas fa-sort"></i>
+                        排序
+                    </button>
+                </div>
+            </div>
+            
+            <div class="cluster-cards">
+                <div class="cluster-card">
+                    <div class="cluster-header">
+                        <div class="cluster-title">
+                            <span class="cluster-id">题簇 #001</span>
+                            <span class="cluster-type type-important">重点</span>
+                        </div>
+                        <div class="cluster-stats">
+                            <span class="stat">5题</span>
+                            <span class="stat">92%相似度</span>
+                        </div>
+                    </div>
+                    <div class="cluster-content">
+                        <div class="cluster-subject">数学 - 函数与导数</div>
+                        <div class="cluster-description">
+                            复合函数求导相关题目，主要考查链式法则的应用
+                        </div>
+                        <div class="cluster-questions">
+                            <div class="question-tag">Q001</div>
+                            <div class="question-tag">Q015</div>
+                            <div class="question-tag">Q032</div>
+                            <div class="question-tag">Q048</div>
+                            <div class="question-tag">Q067</div>
+                        </div>
+                    </div>
+                    <div class="cluster-actions">
+                        <button class="action-btn" onclick="viewClusterDetail(1)">
+                            <i class="fas fa-eye"></i>
+                            查看详情
+                        </button>
+                        <button class="action-btn" onclick="practiceCluster(1)">
+                            <i class="fas fa-play"></i>
+                            开始练习
+                        </button>
+                        <button class="action-btn" onclick="exportCluster(1)">
+                            <i class="fas fa-download"></i>
+                            导出
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="cluster-card">
+                    <div class="cluster-header">
+                        <div class="cluster-title">
+                            <span class="cluster-id">题簇 #002</span>
+                            <span class="cluster-type type-difficult">难点</span>
+                        </div>
+                        <div class="cluster-stats">
+                            <span class="stat">3题</span>
+                            <span class="stat">87%相似度</span>
+                        </div>
+                    </div>
+                    <div class="cluster-content">
+                        <div class="cluster-subject">物理 - 电磁感应</div>
+                        <div class="cluster-description">
+                            电磁感应定律应用题，涉及感应电动势计算
+                        </div>
+                        <div class="cluster-questions">
+                            <div class="question-tag">Q008</div>
+                            <div class="question-tag">Q023</div>
+                            <div class="question-tag">Q041</div>
+                        </div>
+                    </div>
+                    <div class="cluster-actions">
+                        <button class="action-btn" onclick="viewClusterDetail(2)">
+                            <i class="fas fa-eye"></i>
+                            查看详情
+                        </button>
+                        <button class="action-btn" onclick="practiceCluster(2)">
+                            <i class="fas fa-play"></i>
+                            开始练习
+                        </button>
+                        <button class="action-btn" onclick="exportCluster(2)">
+                            <i class="fas fa-download"></i>
+                            导出
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="cluster-card">
+                    <div class="cluster-header">
+                        <div class="cluster-title">
+                            <span class="cluster-id">题簇 #003</span>
+                            <span class="cluster-type type-error">易错</span>
+                        </div>
+                        <div class="cluster-stats">
+                            <span class="stat">4题</span>
+                            <span class="stat">78%相似度</span>
+                        </div>
+                    </div>
+                    <div class="cluster-content">
+                        <div class="cluster-subject">化学 - 有机化学</div>
+                        <div class="cluster-description">
+                            有机物命名规则，容易混淆的同分异构体
+                        </div>
+                        <div class="cluster-questions">
+                            <div class="question-tag">Q012</div>
+                            <div class="question-tag">Q029</div>
+                            <div class="question-tag">Q045</div>
+                            <div class="question-tag">Q056</div>
+                        </div>
+                    </div>
+                    <div class="cluster-actions">
+                        <button class="action-btn" onclick="viewClusterDetail(3)">
+                            <i class="fas fa-eye"></i>
+                            查看详情
+                        </button>
+                        <button class="action-btn" onclick="practiceCluster(3)">
+                            <i class="fas fa-play"></i>
+                            开始练习
+                        </button>
+                        <button class="action-btn" onclick="exportCluster(3)">
+                            <i class="fas fa-download"></i>
+                            导出
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// 页面初始化
+document.addEventListener('DOMContentLoaded', function() {
+    initClustersPage();
+});
+
+function initClustersPage() {
+    bindClustersEvents();
+    loadClustersData();
+}
+
+function bindClustersEvents() {
+    // 筛选事件
+    const filters = ['subjectFilter', 'similarityFilter', 'sizeFilter'];
+    filters.forEach(filterId => {
+        const filter = document.getElementById(filterId);
+        if (filter) {
+            filter.addEventListener('change', filterClusters);
+        }
+    });
+    
+    // 搜索事件
+    const searchInput = document.getElementById('clusterSearch');
+    if (searchInput) {
+        searchInput.addEventListener('input', searchClusters);
+    }
+    
+    // 图表视图切换
+    const chartBtns = document.querySelectorAll('.chart-btn');
+    chartBtns.forEach(btn => {
+        btn.addEventListener('click', function() {
+            chartBtns.forEach(b => b.classList.remove('active'));
+            this.classList.add('active');
+            switchChartView(this.dataset.view);
+        });
+    });
+    
+    // 刷新和导出
+    const refreshBtn = document.getElementById('refreshClusters');
+    if (refreshBtn) {
+        refreshBtn.addEventListener('click', refreshClustersAnalysis);
+    }
+    
+    const exportBtn = document.getElementById('exportClusters');
+    if (exportBtn) {
+        exportBtn.addEventListener('click', exportClustersReport);
+    }
+}
+
+function loadClustersData() {
+    // 模拟加载题簇数据
+    console.log('Loading clusters data...');
+}
+
+function filterClusters() {
+    const subject = document.getElementById('subjectFilter').value;
+    const similarity = document.getElementById('similarityFilter').value;
+    const size = document.getElementById('sizeFilter').value;
+    
+    console.log('Filtering clusters:', { subject, similarity, size });
+    // 实现筛选逻辑
+}
+
+function searchClusters() {
+    const query = document.getElementById('clusterSearch').value;
+    console.log('Searching clusters:', query);
+    // 实现搜索逻辑
+}
+
+function switchChartView(view) {
+    console.log('Switching to chart view:', view);
+    // 实现图表视图切换
+}
+
+function viewClusterDetail(clusterId) {
+    console.log('Viewing cluster detail:', clusterId);
+    // 显示题簇详情
+}
+
+function practiceCluster(clusterId) {
+    console.log('Starting cluster practice:', clusterId);
+    // 开始题簇练习
+}
+
+function exportCluster(clusterId) {
+    console.log('Exporting cluster:', clusterId);
+    // 导出单个题簇
+}
+
+function refreshClustersAnalysis() {
+    console.log('Refreshing clusters analysis...');
+    // 重新分析题簇
+}
+
+function exportClustersReport() {
+    console.log('Exporting clusters report...');
+    // 导出完整报告
+}
+</script>

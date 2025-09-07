@@ -1,0 +1,481 @@
+/* 卡片组件样式 */
+
+/* 基础卡片 */
+.ant-card {
+  background-color: var(--background-color-white);
+  border: 1px solid var(--border-color-split);
+  border-radius: var(--border-radius-base);
+  box-shadow: var(--box-shadow-card);
+  overflow: hidden;
+  transition: all var(--animation-duration-base) var(--ease-base-out);
+}
+
+.ant-card:hover {
+  box-shadow: var(--box-shadow-base);
+  transform: translateY(-2px);
+}
+
+/* 卡片头部 */
+.ant-card-head {
+  padding: var(--spacing-md) var(--spacing-lg);
+  border-bottom: 1px solid var(--border-color-split);
+  background-color: var(--background-color-light);
+}
+
+.ant-card-head-title {
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-medium);
+  color: var(--text-color-primary);
+  margin: 0;
+}
+
+/* 卡片内容 */
+.ant-card-body {
+  padding: var(--spacing-lg);
+}
+
+/* 卡片操作区 */
+.ant-card-actions {
+  display: flex;
+  border-top: 1px solid var(--border-color-split);
+  background-color: var(--background-color-light);
+}
+
+.ant-card-actions > * {
+  flex: 1;
+  padding: var(--spacing-md);
+  text-align: center;
+  border-right: 1px solid var(--border-color-split);
+  cursor: pointer;
+  transition: all var(--animation-duration-base);
+}
+
+.ant-card-actions > *:last-child {
+  border-right: none;
+}
+
+.ant-card-actions > *:hover {
+  background-color: var(--primary-color-light);
+  color: var(--primary-color);
+}
+
+/* 卡片尺寸 */
+.ant-card-small .ant-card-head {
+  padding: var(--spacing-sm) var(--spacing-md);
+}
+
+.ant-card-small .ant-card-body {
+  padding: var(--spacing-md);
+}
+
+.ant-card-small .ant-card-actions > * {
+  padding: var(--spacing-sm);
+}
+
+/* 无边框卡片 */
+.ant-card-bordered {
+  border: none;
+  box-shadow: none;
+}
+
+/* 错题卡片 */
+.question-card {
+  background-color: var(--background-color-white);
+  border: 1px solid var(--border-color-split);
+  border-radius: var(--border-radius-base);
+  padding: var(--spacing-lg);
+  margin-bottom: var(--spacing-md);
+  transition: all var(--animation-duration-base);
+  cursor: pointer;
+}
+
+.question-card:hover {
+  border-color: var(--primary-color);
+  box-shadow: var(--box-shadow-card);
+  transform: translateY(-1px);
+}
+
+.question-card.selected {
+  border-color: var(--primary-color);
+  background-color: var(--primary-color-light);
+}
+
+.question-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: var(--spacing-md);
+}
+
+.question-meta {
+  display: flex;
+  gap: var(--spacing-sm);
+  align-items: center;
+}
+
+.question-id {
+  font-size: var(--font-size-sm);
+  color: var(--text-color-secondary);
+  background-color: var(--background-color-light);
+  padding: 2px var(--spacing-xs);
+  border-radius: var(--border-radius-sm);
+}
+
+.question-subject {
+  font-size: var(--font-size-sm);
+  padding: 2px var(--spacing-xs);
+  border-radius: var(--border-radius-sm);
+  color: var(--text-color-inverse);
+}
+
+.question-subject.math {
+  background-color: var(--subject-math);
+}
+
+.question-subject.physics {
+  background-color: var(--subject-physics);
+}
+
+.question-subject.chemistry {
+  background-color: var(--subject-chemistry);
+}
+
+.question-subject.biology {
+  background-color: var(--subject-biology);
+}
+
+.question-difficulty {
+  font-size: var(--font-size-sm);
+  padding: 2px var(--spacing-xs);
+  border-radius: var(--border-radius-sm);
+  color: var(--text-color-inverse);
+}
+
+.question-difficulty.easy {
+  background-color: var(--difficulty-easy);
+}
+
+.question-difficulty.medium {
+  background-color: var(--difficulty-medium);
+}
+
+.question-difficulty.hard {
+  background-color: var(--difficulty-hard);
+}
+
+.question-content {
+  font-size: var(--font-size-base);
+  color: var(--text-color-primary);
+  line-height: var(--line-height-lg);
+  margin-bottom: var(--spacing-md);
+}
+
+.question-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: var(--spacing-md);
+  border-top: 1px solid var(--border-color-split);
+}
+
+.question-stats {
+  display: flex;
+  gap: var(--spacing-md);
+  font-size: var(--font-size-sm);
+  color: var(--text-color-secondary);
+}
+
+.question-actions {
+  display: flex;
+  gap: var(--spacing-sm);
+}
+
+/* 统计卡片 */
+.stat-card {
+  background-color: var(--background-color-white);
+  border: 1px solid var(--border-color-split);
+  border-radius: var(--border-radius-base);
+  padding: var(--spacing-lg);
+  text-align: center;
+  transition: all var(--animation-duration-base);
+}
+
+.stat-card:hover {
+  border-color: var(--primary-color);
+  box-shadow: var(--box-shadow-card);
+  transform: translateY(-2px);
+}
+
+.stat-icon {
+  font-size: 32px;
+  margin-bottom: var(--spacing-sm);
+}
+
+.stat-content {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
+}
+
+.stat-number {
+  font-size: var(--font-size-xxl);
+  font-weight: var(--font-weight-bold);
+  color: var(--primary-color);
+  line-height: 1;
+}
+
+.stat-label {
+  font-size: var(--font-size-sm);
+  color: var(--text-color-secondary);
+}
+
+/* 功能卡片 */
+.feature-card {
+  background-color: var(--background-color-white);
+  border: 1px solid var(--border-color-split);
+  border-radius: var(--border-radius-base);
+  padding: var(--spacing-lg);
+  text-align: center;
+  transition: all var(--animation-duration-base);
+  cursor: pointer;
+}
+
+.feature-card:hover {
+  border-color: var(--primary-color);
+  box-shadow: var(--box-shadow-card);
+  transform: translateY(-2px);
+}
+
+.feature-icon {
+  font-size: 48px;
+  margin-bottom: var(--spacing-md);
+}
+
+.feature-card h3 {
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-medium);
+  color: var(--text-color-primary);
+  margin-bottom: var(--spacing-sm);
+}
+
+.feature-card p {
+  font-size: var(--font-size-sm);
+  color: var(--text-color-secondary);
+  margin-bottom: var(--spacing-md);
+}
+
+/* 题簇卡片 */
+.cluster-card {
+  background-color: var(--background-color-white);
+  border: 1px solid var(--border-color-split);
+  border-radius: var(--border-radius-base);
+  padding: var(--spacing-lg);
+  margin-bottom: var(--spacing-md);
+  transition: all var(--animation-duration-base);
+}
+
+.cluster-card:hover {
+  border-color: var(--primary-color);
+  box-shadow: var(--box-shadow-card);
+  transform: translateY(-1px);
+}
+
+.cluster-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--spacing-md);
+}
+
+.cluster-title {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+}
+
+.cluster-id {
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-medium);
+  color: var(--text-color-primary);
+}
+
+.cluster-type {
+  font-size: var(--font-size-sm);
+  padding: 2px var(--spacing-xs);
+  border-radius: var(--border-radius-sm);
+  color: var(--text-color-inverse);
+}
+
+.cluster-type.type-important {
+  background-color: var(--success-color);
+}
+
+.cluster-type.type-difficult {
+  background-color: var(--error-color);
+}
+
+.cluster-type.type-error {
+  background-color: var(--warning-color);
+}
+
+.cluster-stats {
+  display: flex;
+  gap: var(--spacing-sm);
+  font-size: var(--font-size-sm);
+  color: var(--text-color-secondary);
+}
+
+.cluster-content {
+  margin-bottom: var(--spacing-md);
+}
+
+.cluster-subject {
+  font-size: var(--font-size-sm);
+  color: var(--primary-color);
+  font-weight: var(--font-weight-medium);
+  margin-bottom: var(--spacing-xs);
+}
+
+.cluster-description {
+  font-size: var(--font-size-base);
+  color: var(--text-color-primary);
+  margin-bottom: var(--spacing-sm);
+}
+
+.cluster-questions {
+  display: flex;
+  gap: var(--spacing-xs);
+  flex-wrap: wrap;
+  margin-bottom: var(--spacing-md);
+}
+
+.question-tag {
+  font-size: var(--font-size-sm);
+  padding: 2px var(--spacing-xs);
+  background-color: var(--background-color-light);
+  border: 1px solid var(--border-color-base);
+  border-radius: var(--border-radius-sm);
+  color: var(--text-color-secondary);
+}
+
+.cluster-actions {
+  display: flex;
+  gap: var(--spacing-sm);
+  padding-top: var(--spacing-md);
+  border-top: 1px solid var(--border-color-split);
+}
+
+/* 分析卡片 */
+.analysis-card {
+  background-color: var(--background-color-light);
+  border: 1px solid var(--border-color-split);
+  border-radius: var(--border-radius-base);
+  padding: var(--spacing-md);
+  margin: var(--spacing-sm) 0;
+}
+
+.analysis-card h4 {
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-medium);
+  color: var(--text-color-primary);
+  margin-bottom: var(--spacing-sm);
+}
+
+.analysis-card p {
+  font-size: var(--font-size-sm);
+  color: var(--text-color-secondary);
+  margin-bottom: var(--spacing-xs);
+}
+
+.analysis-card ol {
+  padding-left: var(--spacing-md);
+  margin: 0;
+}
+
+.analysis-card li {
+  font-size: var(--font-size-sm);
+  color: var(--text-color-secondary);
+  margin-bottom: var(--spacing-xs);
+}
+
+/* 概览卡片 */
+.overview-card {
+  background: linear-gradient(135deg, var(--primary-color), var(--primary-color-hover));
+  color: var(--text-color-inverse);
+  border-radius: var(--border-radius-base);
+  padding: var(--spacing-lg);
+  margin-bottom: var(--spacing-md);
+}
+
+.overview-card h3 {
+  color: var(--text-color-inverse);
+  margin-bottom: var(--spacing-sm);
+}
+
+.overview-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: var(--spacing-md);
+}
+
+.overview-stat {
+  text-align: center;
+}
+
+.overview-stat-number {
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-bold);
+  line-height: 1;
+  margin-bottom: var(--spacing-xs);
+}
+
+.overview-stat-label {
+  font-size: var(--font-size-sm);
+  opacity: 0.9;
+}
+
+/* 卡片网格 */
+.card-grid {
+  display: grid;
+  gap: var(--spacing-md);
+}
+
+.card-grid-2 {
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+}
+
+.card-grid-3 {
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+}
+
+.card-grid-4 {
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+}
+
+/* 响应式调整 */
+@media (max-width: 768px) {
+  .ant-card-body {
+    padding: var(--spacing-md);
+  }
+  
+  .question-card,
+  .cluster-card {
+    padding: var(--spacing-md);
+  }
+  
+  .card-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .question-header,
+  .cluster-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--spacing-sm);
+  }
+  
+  .question-actions,
+  .cluster-actions {
+    flex-wrap: wrap;
+  }
+}
