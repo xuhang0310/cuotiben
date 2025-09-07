@@ -8,8 +8,8 @@
     <!-- Ant Design CSS -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/antd@5.12.8/dist/reset.css">
     
-    <!-- 自定义样式 -->
-    <link rel="stylesheet" href="styles.css">
+    <!-- 模块化样式 -->
+    <link rel="stylesheet" href="styles/main.css">
     
     <!-- 字体 -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -20,435 +20,17 @@
 <body>
     <div class="ant-app">
         <!-- 顶部导航栏 -->
-        <header class="ant-header">
-            <div class="header-left">
-                <div class="app-logo">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M19 3H5C3.9 3 3 3.9 3 5V19C3 20.1 3.9 21 5 21H19C20.1 21 21 20.1 21 19V5C21 3.9 20.1 3 19 3ZM19 19H5V5H19V19ZM17 12H7V10H17V12ZM13 16H7V14H13V16ZM17 8H7V6H17V8Z" fill="#1677ff"/>
-                    </svg>
-                    <span>错题本</span>
-                </div>
-                <nav class="header-nav">
-                    <div class="nav-item active" data-page="questions">
-                        <i class="fas fa-book"></i>
-                        <span>错题列表</span>
-                    </div>
-                    <div class="nav-item" data-page="dashboard">
-                        <i class="fas fa-chart-bar"></i>
-                        <span>数据看板</span>
-                    </div>
-                    <div class="nav-item" data-page="ai-explanation">
-                        <i class="fas fa-robot"></i>
-                        <span>AI讲解</span>
-                    </div>
-                    <div class="nav-item" data-page="duplicate-cluster">
-                        <i class="fas fa-link"></i>
-                        <span>重复题簇</span>
-                    </div>
-                    <div class="nav-item" data-page="ebbinghaus-calendar">
-                        <i class="fas fa-calendar-alt"></i>
-                        <span>复习日历</span>
-                    </div>
-                </nav>
-            </div>
-            
-            <div class="header-center">
-                <div class="search-container">
-                    <svg class="search-icon" width="16" height="16" viewBox="0 0 16 16" fill="none">
-                        <path d="M14.5 14.5L10.5 10.5M12 7C12 9.76142 9.76142 12 7 12C4.23858 12 2 9.76142 2 7C2 4.23858 4.23858 2 7 2C9.76142 2 12 4.23858 12 7Z" stroke="#666" stroke-width="1.5" stroke-linecap="round"/>
-                    </svg>
-                    <input type="text" class="search-input" placeholder="搜索错题...">
-                </div>
-            </div>
-            
-            <div class="header-right">
-                <div class="header-actions">
-                    <div class="notification-btn">
-                        <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-                            <path d="M10 2C8.5 2 7.5 2.7 7.5 4V5.5C5.5 6.5 4 8.5 4 11V14C4 15.5 5 17 6.5 17H8C8 18.1 8.9 19 10 19C11.1 19 12 18.1 12 17H13.5C15 17 16 15.5 16 14V11C16 8.5 14.5 6.5 12.5 5.5V4C12.5 2.7 11.5 2 10 2ZM10 17C9.4 17 9 16.6 9 16H11C11 16.6 10.6 17 10 17ZM14 14C14 14.6 13.6 15 13 15H7C6.4 15 6 14.6 6 14V11C6 9.3 7.3 8 9 8H11C12.7 8 14 9.3 14 11V14Z" fill="#666"/>
-                        </svg>
-                        <span class="notification-count">3</span>
-                    </div>
-                    <div class="user-dropdown">
-                        <div class="user-avatar">
-                            <img src="https://placehold.co/32x32?text=张" alt="用户头像">
-                        </div>
-                        <div class="dropdown-menu">
-                            <div class="dropdown-item">个人设置</div>
-                            <div class="dropdown-item">学习报告</div>
-                            <div class="dropdown-divider"></div>
-                            <div class="dropdown-item">退出登录</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </header>
+        <div id="header-container"></div>
         
         <!-- 主内容区 -->
         <div class="ant-layout">
             <!-- 侧边栏 -->
-            <aside class="ant-sider" id="filterSider">
-                <div class="sider-content">
-                    <div class="sider-header">
-                        <h3>筛选条件</h3>
-                        <button class="sider-close" id="closeFilter">
-                            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-                                <path d="M12 4L4 12M4 4L12 12" stroke="#666" stroke-width="1.5" stroke-linecap="round"/>
-                            </svg>
-                        </button>
-                    </div>
-                    
-                    <div class="filter-section">
-                        <div class="filter-group">
-                            <label class="filter-label">学科</label>
-                            <div class="filter-options">
-                                <label class="ant-checkbox">
-                                    <input type="checkbox" name="subject" value="all" checked>
-                                    <span class="checkmark"></span>
-                                    全部
-                                </label>
-                                <label class="ant-checkbox">
-                                    <input type="checkbox" name="subject" value="math">
-                                    <span class="checkmark"></span>
-                                    数学
-                                </label>
-                                <label class="ant-checkbox">
-                                    <input type="checkbox" name="subject" value="chinese">
-                                    <span class="checkmark"></span>
-                                    语文
-                                </label>
-                                <label class="ant-checkbox">
-                                    <input type="checkbox" name="subject" value="english">
-                                    <span class="checkmark"></span>
-                                    英语
-                                </label>
-                                <label class="ant-checkbox">
-                                    <input type="checkbox" name="subject" value="physics">
-                                    <span class="checkmark"></span>
-                                    物理
-                                </label>
-                            </div>
-                        </div>
-                        
-                        <div class="filter-group">
-                            <label class="filter-label">难度</label>
-                            <div class="filter-options">
-                                <label class="ant-checkbox">
-                                    <input type="checkbox" name="difficulty" value="all" checked>
-                                    <span class="checkmark"></span>
-                                    全部
-                                </label>
-                                <label class="ant-checkbox">
-                                    <input type="checkbox" name="difficulty" value="easy">
-                                    <span class="checkmark"></span>
-                                    简单
-                                </label>
-                                <label class="ant-checkbox">
-                                    <input type="checkbox" name="difficulty" value="medium">
-                                    <span class="checkmark"></span>
-                                    中等
-                                </label>
-                                <label class="ant-checkbox">
-                                    <input type="checkbox" name="difficulty" value="hard">
-                                    <span class="checkmark"></span>
-                                    困难
-                                </label>
-                            </div>
-                        </div>
-                        
-                        <div class="filter-group">
-                            <label class="filter-label">掌握度</label>
-                            <div class="filter-options">
-                                <label class="ant-checkbox">
-                                    <input type="checkbox" name="mastery" value="all" checked>
-                                    <span class="checkmark"></span>
-                                    全部
-                                </label>
-                                <label class="ant-checkbox">
-                                    <input type="checkbox" name="mastery" value="need-review">
-                                    <span class="checkmark"></span>
-                                    待复习
-                                </label>
-                                <label class="ant-checkbox">
-                                    <input type="checkbox" name="mastery" value="mastered">
-                                    <span class="checkmark"></span>
-                                    已掌握
-                                </label>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="filter-actions">
-                        <button class="ant-btn ant-btn-default">重置</button>
-                        <button class="ant-btn ant-btn-primary">应用</button>
-                    </div>
-                </div>
-            </aside>
+            <div id="sidebar-container"></div>
             
             <!-- 内容区域 -->
             <main class="content-area">
-                <!-- 错题列表页面 -->
-                <div id="questions" class="ant-page active">
-                    <div class="page-header">
-                        <h2 class="page-title">错题列表</h2>
-                        <div class="page-actions">
-                            <button class="filter-toggle" id="openFilter">
-                                <i class="fas fa-filter"></i>
-                                筛选
-                            </button>
-                            <button class="ant-btn ant-btn-primary" id="addQuestionBtn">
-                                <i class="fas fa-plus"></i>
-                                新增错题
-                            </button>
-                        </div>
-                    </div>
-                    
-                    <div class="toolbar">
-                        <div class="toolbar-left">
-                            <!-- AntD Segmented组件 -->
-                            <div class="ant-segmented">
-                                <div class="ant-segmented-group">
-                                    <div class="ant-segmented-item ant-segmented-item-selected" data-sort="nextReview">
-                                        <div class="ant-segmented-item-label">下次复习</div>
-                                    </div>
-                                    <div class="ant-segmented-item" data-sort="recentAdded">
-                                        <div class="ant-segmented-item-label">最近添加</div>
-                                    </div>
-                                    <div class="ant-segmented-item" data-sort="mastery">
-                                        <div class="ant-segmented-item-label">掌握度</div>
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <div class="view-toggle">
-                                <button class="view-btn active" data-view="grid">
-                                    <i class="fas fa-th"></i>
-                                    网格
-                                </button>
-                                <button class="view-btn" data-view="list">
-                                    <i class="fas fa-list"></i>
-                                    列表
-                                </button>
-                            </div>
-                            
-                            <button class="ant-btn ant-btn-default" id="toggleInstructions" style="margin-left: 12px;">
-                                <i class="fas fa-info-circle"></i>
-                                使用说明
-                            </button>
-                        </div>
-                        
-                        <div class="toolbar-right">
-                            <div class="page-extra">共 <span id="totalQuestions">247</span> 道错题，已掌握 <span id="masteredQuestions">189</span> 道</div>
-                        </div>
-                    </div>
-                    
-                    <!-- 使用说明 -->
-                    <div class="usage-instructions" id="usageInstructions" style="background: var(--ant-primary-light); border-radius: var(--ant-border-radius); padding: 16px; margin-bottom: 16px; display: none;">
-                        <h4 style="margin-top: 0; color: var(--ant-primary);">使用说明</h4>
-                        <ul style="margin: 0; padding-left: 20px;">
-                            <li>鼠标悬停在卡片上可查看题号和下次复习日期</li>
-                            <li>点击卡片可查看错题详情</li>
-                            <li>使用顶部筛选器可按学科、难度等条件筛选错题</li>
-                            <li>通过排序选项可按不同方式排列错题</li>
-                            <li>掌握度显示：已掌握（绿色角标）、待加强（薄荷绿进度条）、未复习（灰色进度条）</li>
-                        </ul>
-                    </div>
-                    
-                    <div class="questions-grid">
-                        <!-- 错题卡片将通过JavaScript动态生成 -->
-                    </div>
-                    
-                    <div class="ant-pagination">
-                        <button class="page-btn" disabled>‹</button>
-                        <button class="page-btn active">1</button>
-                        <button class="page-btn">2</button>
-                        <button class="page-btn">3</button>
-                        <button class="page-btn">4</button>
-                        <button class="page-btn">5</button>
-                        <button class="page-btn">...</button>
-                        <button class="page-btn">10</button>
-                        <button class="page-btn">›</button>
-                    </div>
-                </div>
-                
-                <!-- 数据看板页面 -->
-                <div id="dashboard" class="ant-page">
-                    <div class="page-header">
-                        <h2 class="page-title">学习数据看板</h2>
-                    </div>
-                    
-                    <div class="overview-cards">
-                        <div class="stat-card">
-                            <div class="stat-value">247</div>
-                            <div class="stat-label">总错题数</div>
-                            <div class="stat-trend up">↑ 12.5%</div>
-                        </div>
-                        <div class="stat-card">
-                            <div class="stat-value">189</div>
-                            <div class="stat-label">已掌握</div>
-                            <div class="stat-trend up">↑ 8.3%</div>
-                        </div>
-                        <div class="stat-card">
-                            <div class="stat-value">58</div>
-                            <div class="stat-label">待复习</div>
-                            <div class="stat-trend down">↓ 5.2%</div>
-                        </div>
-                        <div class="stat-card">
-                            <div class="stat-value">76.5%</div>
-                            <div class="stat-label">掌握率</div>
-                            <div class="stat-trend up">↑ 3.8%</div>
-                        </div>
-                    </div>
-                    
-                    <div class="charts-grid">
-                        <div class="chart-card">
-                            <h3>学科分布</h3>
-                            <div class="chart-placeholder">
-                                <!-- 图表占位符 -->
-                            </div>
-                        </div>
-                        <div class="chart-card">
-                            <h3>掌握度趋势</h3>
-                            <div class="chart-placeholder">
-                                <!-- 图表占位符 -->
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- AI讲解中心页面 -->
-                <div id="ai-explanation" class="ant-page">
-                    <div class="page-header">
-                        <h2 class="page-title">AI错题讲解</h2>
-                    </div>
-                    
-                    <div class="ai-container">
-                        <div class="ai-chat-container">
-                            <div class="chat-messages">
-                                <div class="message ai-message">
-                                    <div class="avatar ai-avatar">🤖</div>
-                                    <div class="message-content">
-                                        <p>你好！我是你的AI学习助手，可以帮你：</p>
-                                        <ul>
-                                            <li>📝 错题知识点分析</li>
-                                            <li>💡 解题思路指导</li>
-                                            <li>📚 相关知识点推荐</li>
-                                            <li>🎯 学习计划建议</li>
-                                        </ul>
-                                        <p>请选择一道错题或直接向我提问吧！</p>
-                                    </div>
-                                </div>
-                                
-                                <div class="message user-message">
-                                    <div class="avatar user-avatar">张</div>
-                                    <div class="message-content">
-                                        <p>这道函数题我不太明白，能帮我分析一下吗？</p>
-                                    </div>
-                                </div>
-                                
-                                <div class="message ai-message">
-                                    <div class="avatar ai-avatar">🤖</div>
-                                    <div class="message-content">
-                                        <p>当然可以！这是一道复合函数求导题。让我为你详细分析：</p>
-                                        <div class="analysis-card">
-                                            <h4>🔍 题目分析</h4>
-                                            <p>这道题考查的是复合函数的求导法则（链式法则）</p>
-                                        </div>
-                                        <div class="analysis-card">
-                                            <h4>📋 解题步骤</h4>
-                                            <ol>
-                                                <li>识别内外层函数</li>
-                                                <li>分别求导外层和内层函数</li>
-                                                <li>应用链式法则相乘</li>
-                                                <li>化简得到最终结果</li>
-                                            </ol>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <div class="chat-input">
-                                <input type="text" class="chat-input-field" placeholder="输入你的问题...">
-                                <button class="send-btn">
-                                    <i class="fas fa-paper-plane"></i>
-                                </button>
-                            </div>
-                        </div>
-                        
-                        <div class="ai-features">
-                            <div class="feature-card">
-                                <div class="feature-icon">🔊</div>
-                                <h3>语音讲解</h3>
-                                <p>支持语音播放，随时随地学习</p>
-                            </div>
-                            <div class="feature-card">
-                                <div class="feature-icon">📊</div>
-                                <h3>学习分析</h3>
-                                <p>分析学习薄弱点，推荐复习重点</p>
-                            </div>
-                            <div class="feature-card">
-                                <div class="feature-icon">📺</div>
-                                <h3>视频解析</h3>
-                                <p>观看名师视频讲解</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- 重复题簇页面 -->
-                <div id="duplicate-cluster" class="ant-page">
-                    <div class="page-header">
-                        <h2 class="page-title">重复题簇图谱</h2>
-                        <div class="page-actions">
-                            <button class="ant-btn ant-btn-default">合并簇</button>
-                            <button class="ant-btn ant-btn-default">解散簇</button>
-                        </div>
-                    </div>
-                    
-                    <div class="cluster-container">
-                        <div class="cluster-graph">
-                            <!-- 力导向图占位符 -->
-                            <div class="graph-placeholder">
-                                <div class="node math" style="position: absolute; left: 100px; top: 100px;">题1</div>
-                                <div class="node chinese" style="position: absolute; left: 200px; top: 150px;">题2</div>
-                                <div class="node english" style="position: absolute; left: 150px; top: 250px;">题3</div>
-                                <div class="node math" style="position: absolute; left: 300px; top: 200px;">题4</div>
-                                <!-- 连线示例 -->
-                                <div class="link" style="position: absolute; left: 140px; top: 120px; width: 60px; height: 2px; background: #4CAF50;"></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- 艾宾浩斯日历页面 -->
-                <div id="ebbinghaus-calendar" class="ant-page">
-                    <div class="page-header">
-                        <h2 class="page-title">艾宾浩斯复习日历</h2>
-                        <div class="page-actions">
-                            <button class="ant-btn ant-btn-default">今天</button>
-                            <button class="ant-btn ant-btn-primary">设置间隔</button>
-                        </div>
-                    </div>
-                    
-                    <div class="calendar-container">
-                        <div class="calendar-header">
-                            <button class="ant-btn ant-btn-default">◀</button>
-                            <h3>2023年复习日历</h3>
-                            <button class="ant-btn ant-btn-default">▶</button>
-                        </div>
-                        <div class="calendar-grid">
-                            <!-- 日历头部 -->
-                            <div class="calendar-cell header">日</div>
-                            <div class="calendar-cell header">一</div>
-                            <div class="calendar-cell header">二</div>
-                            <div class="calendar-cell header">三</div>
-                            <div class="calendar-cell header">四</div>
-                            <div class="calendar-cell header">五</div>
-                            <div class="calendar-cell header">六</div>
-                            
-                            <!-- 日历内容将通过JavaScript生成 -->
-                        </div>
-                    </div>
+                <div id="page-container">
+                    <!-- 页面内容将通过路由动态加载 -->
                 </div>
             </main>
         </div>
@@ -457,6 +39,49 @@
     <!-- 遮罩层 -->
     <div class="overlay" id="overlay"></div>
     
-    <script src="script.js"></script>
+    <!-- 核心脚本 -->
+    <script src="scripts/core/data-manager.js"></script>
+    <script src="scripts/core/ui-renderer.js"></script>
+    <script src="scripts/core/app-controller.js"></script>
+    <script src="scripts/utils/helpers.js"></script>
+    
+    <!-- 应用初始化 -->
+    <script>
+        // 应用初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            // 加载公共组件
+            loadComponent('header-container', 'components/header.html');
+            loadComponent('sidebar-container', 'components/sidebar.html');
+            
+            // 初始化应用
+            const app = new AppController();
+            app.init();
+            
+            // 默认加载错题列表页
+            app.navigateTo('questions');
+        });
+        
+        // 组件加载函数
+        async function loadComponent(containerId, componentPath) {
+            try {
+                const response = await fetch(componentPath);
+                const html = await response.text();
+                document.getElementById(containerId).innerHTML = html;
+            } catch (error) {
+                console.error(`Failed to load component: ${componentPath}`, error);
+            }
+        }
+        
+        // 页面加载函数
+        async function loadPage(pagePath) {
+            try {
+                const response = await fetch(pagePath);
+                const html = await response.text();
+                document.getElementById('page-container').innerHTML = html;
+            } catch (error) {
+                console.error(`Failed to load page: ${pagePath}`, error);
+            }
+        }
+    </script>
 </body>
 </html>
