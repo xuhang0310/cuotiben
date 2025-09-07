@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>错题详情 - 错题本</title>
+    
+    <!-- Ant Design CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/antd@5.12.8/dist/reset.css">
+    
+    <!-- 自定义样式 -->
+    <link rel="stylesheet" href="../styles.css">
+    
+    <!-- 字体 -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- 图标 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <div class="ant-app">
+        <!-- 顶部导航栏 -->
+        <header class="ant-header">
+            <div class="header-left">
+                <div class="app-logo">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M19 3H5C3.9 3 3 3.9 3 5V19C3 20.1 3.9 21 5 21H19C20.1 21 21 20.1 21 19V5C21 3.9 20.1 3 19 3ZM19 19H5V5H19V19ZM17 12H7V10H17V12ZM13 16H7V14H13V16ZM17 8H7V6H17V8Z" fill="#1677ff"/>
+                    </svg>
+                    <span>错题本</span>
+                </div>
+            </div>
+            
+            <div class="header-center">
+                <button class="ant-btn ant-btn-default" id="backBtn">
+                    <i class="fas fa-arrow-left"></i>
+                    返回错题列表
+                </button>
+            </div>
+            
+            <div class="header-right">
+                <div class="header-actions">
+                    <div class="notification-btn">
+                        <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                            <path d="M10 2C8.5 2 7.5 2.7 7.5 4V5.5C5.5 6.5 4 8.5 4 11V14C4 15.5 5 17 6.5 17H8C8 18.1 8.9 19 10 19C11.1 19 12 18.1 12 17H13.5C15 17 16 15.5 16 14V11C16 8.5 14.5 6.5 12.5 5.5V4C12.5 2.7 11.5 2 10 2ZM10 17C9.4 17 9 16.6 9 16H11C11 16.6 10.6 17 10 17ZM14 14C14 14.6 13.6 15 13 15H7C6.4 15 6 14.6 6 14V11C6 9.3 7.3 8 9 8H11C12.7 8 14 9.3 14 11V14Z" fill="#666"/>
+                        </svg>
+                        <span class="notification-count">3</span>
+                    </div>
+                    <div class="user-dropdown">
+                        <div class="user-avatar">
+                            <img src="https://placehold.co/32x32?text=张" alt="用户头像">
+                        </div>
+                        <div class="dropdown-menu">
+                            <div class="dropdown-item">个人设置</div>
+                            <div class="dropdown-item">学习报告</div>
+                            <div class="dropdown-divider"></div>
+                            <div class="dropdown-item">退出登录</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
+        
+        <!-- 主内容区 -->
+        <div class="ant-layout">
+            <!-- 内容区域 -->
+            <main class="content-area">
+                <!-- 错题详情页面 -->
+                <div id="question-detail" class="ant-page active">
+                    <div class="page-header">
+                        <h2 class="page-title">错题详情</h2>
+                        <div class="page-actions">
+                            <button class="ant-btn ant-btn-default" id="editBtn">
+                                <i class="fas fa-edit"></i>
+                                编辑
+                            </button>
+                            <button class="ant-btn ant-btn-primary" id="reviewBtn">
+                                <i class="fas fa-redo"></i>
+                                复习
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="question-detail-container">
+                        <!-- 错题基本信息 -->
+                        <div class="question-basic-info">
+                            <div class="info-row">
+                                <span class="info-label">题号:</span>
+                                <span class="info-value" id="questionId">001</span>
+                            </div>
+                            <div class="info-row">
+                                <span class="info-label">学科:</span>
+                                <span class="info-value" id="subject">数学</span>
+                            </div>
+                            <div class="info-row">
+                                <span class="info-label">章节:</span>
+                                <span class="info-value" id="chapter">第一章</span>
+                            </div>
+                            <div class="info-row">
+                                <span class="info-label">难度:</span>
+                                <span class="info-value" id="difficulty">中等</span>
+                            </div>
+                            <div class="info-row">
+                                <span class="info-label">添加时间:</span>
+                                <span class="info-value" id="addDate">2023-05-15</span>
+                            </div>
+                            <div class="info-row">
+                                <span class="info-label">最近复习:</span>
+                                <span class="info-value" id="lastReviewDate">2023-06-10</span>
+                            </div>
+                            <div class="info-row">
+                                <span class="info-label">下次复习:</span>
+                                <span class="info-value" id="nextReviewDate">2023-06-20</span>
+                            </div>
+                        </div>
+                        
+                        <!-- 掌握度进度条 -->
+                        <div class="mastery-progress-section">
+                            <h3>掌握度</h3>
+                            <div class="mastery-progress-container">
+                                <div class="mastery-progress">
+                                    <svg width="120" height="120" viewBox="0 0 120 120">
+                                        <circle class="mastery-progress-circle-bg" cx="60" cy="60" r="50"></circle>
+                                        <circle class="mastery-progress-circle-fill" cx="60" cy="60" r="50" 
+                                                stroke-dasharray="314.159" stroke-dashoffset="0"></circle>
+                                    </svg>
+                                    <div class="mastery-progress-text">80%</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- 错题图片 -->
+                        <div class="question-image-section">
+                            <h3>错题内容</h3>
+                            <div class="question-image-container">
+                                <img src="https://placehold.co/600x400?text=错题图片" alt="错题图片" id="questionImage">
+                            </div>
+                        </div>
+                        
+                        <!-- 标签 -->
+                        <div class="question-tags-section">
+                            <h3>标签</h3>
+                            <div class="question-tags" id="questionTags">
+                                <!-- 标签将通过JavaScript动态生成 -->
+                            </div>
+                        </div>
+                        
+                        <!-- 错题分析 -->
+                        <div class="question-analysis-section">
+                            <h3>错题分析</h3>
+                            <div class="analysis-content" id="errorAnalysis">
+                                对函数概念理解不清晰，没有掌握复合函数的求导法则。
+                            </div>
+                        </div>
+                        
+                        <!-- 正确解法 -->
+                        <div class="question-solution-section">
+                            <h3>正确解法</h3>
+                            <div class="solution-content" id="correctSolution">
+                                首先识别复合函数结构，然后应用链式法则进行求导。
+                            </div>
+                        </div>
+                        
+                        <!-- AI讲解 -->
+                        <div class="ai-explanation-section">
+                            <h3>AI讲解</h3>
+                            <div class="ai-content" id="aiExplanation">
+                                这道题考查复合函数求导，需要先分析函数的复合结构，再应用相应的求导法则...
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+    
+    <!-- 遮罩层 -->
+    <div class="overlay" id="overlay"></div>
+    
+    <script src="../script.js"></script>
+    <script>
+        // 错题详情页面的交互逻辑
+        document.addEventListener('DOMContentLoaded', function() {
+            // 显示加载状态
+            const container = document.querySelector('.question-detail-container');
+            container.innerHTML = '<div class="loading">加载中...</div>';
+            
+            // 获取URL参数中的错题ID
+            const urlParams = new URLSearchParams(window.location.search);
+            const questionId = urlParams.get('id');
+            
+            // 模拟异步加载数据
+            setTimeout(() => {
+                try {
+                    // 初始化数据管理器
+                    const dataManager = new DataManager();
+                    
+                    // 获取错题数据
+                    const questionData = questionId ? dataManager.getQuestionById(questionId) : null;
+                    
+                    if (questionData) {
+                        // 填充页面数据
+                        document.getElementById('questionId').textContent = questionData.id.toString().padStart(3, '0');
+                        document.getElementById('subject').textContent = questionData.subjectName;
+                        document.getElementById('chapter').textContent = questionData.chapter;
+                        document.getElementById('difficulty').textContent = questionData.difficultyName;
+                        document.getElementById('addDate').textContent = questionData.addDate.toLocaleDateString();
+                        document.getElementById('lastReviewDate').textContent = questionData.lastReviewDate ? 
+                            questionData.lastReviewDate.toLocaleDateString() : '暂无';
+                        document.getElementById('nextReviewDate').textContent = questionData.nextReviewDate.toLocaleDateString();
+                        document.getElementById('questionImage').src = questionData.imageUrl;
+                        document.getElementById('errorAnalysis').textContent = questionData.errorAnalysis;
+                        document.getElementById('correctSolution').textContent = questionData.correctSolution;
+                        document.getElementById('aiExplanation').textContent = questionData.aiExplanation;
+                        
+                        // 填充标签
+                        const tagContainer = document.getElementById('questionTags');
+                        tagContainer.innerHTML = '';
+                        questionData.tags.forEach(tag => {
+                            const tagElement = document.createElement('span');
+                            tagElement.className = 'tag';
+                            tagElement.textContent = tag;
+                            tagContainer.appendChild(tagElement);
+                        });
+                        
+                        // 设置掌握度进度条
+                        const masteryPercentage = (questionData.masteryLevel / 5) * 100;
+                        const circumference = 2 * Math.PI * 50; // 2πr, r=50
+                        const strokeDashoffset = circumference - (masteryPercentage / 100) * circumference;
+                        
+                        const progressCircle = document.querySelector('.mastery-progress-circle-fill');
+                        const progressText = document.querySelector('.mastery-progress-text');
+                        
+                        progressCircle.style.strokeDasharray = circumference;
+                        progressCircle.style.strokeDashoffset = strokeDashoffset;
+                        progressText.textContent = `${Math.round(masteryPercentage)}%`;
+                        
+                        // 根据掌握度设置颜色和状态文本
+                        let masteryStatus = '';
+                        if (questionData.masteryLevel === 5) {
+                            masteryStatus = '已掌握';
+                            progressCircle.style.stroke = 'var(--ant-success)';
+                            progressText.style.color = 'var(--ant-success)';
+                        } else if (questionData.masteryLevel >= 3) {
+                            masteryStatus = '待加强';
+                            progressCircle.style.stroke = '#36cfc9'; // 薄荷绿
+                            progressText.style.color = '#36cfc9';
+                        } else if (questionData.masteryLevel > 0) {
+                            masteryStatus = '待加强';
+                            progressCircle.style.stroke = '#36cfc9'; // 薄荷绿
+                            progressText.style.color = '#36cfc9';
+                        } else {
+                            masteryStatus = '未复习';
+                            progressCircle.style.stroke = 'var(--ant-border-secondary)';
+                            progressText.style.color = 'var(--ant-text-tertiary)';
+                        }
+                        
+                        // 显示内容
+                        container.innerHTML = `
+                            <!-- 错题基本信息 -->
+                            <div class="question-basic-info">
+                                <div class="info-row">
+                                    <span class="info-label">题号:</span>
+                                    <span class="info-value" id="questionId">${questionData.id.toString().padStart(3, '0')}</span>
+                                </div>
+                                <div class="info-row">
+                                    <span class="info-label">学科:</span>
+                                    <span class="info-value" id="subject">${questionData.subjectName}</span>
+                                </div>
+                                <div class="info-row">
+                                    <span class="info-label">章节:</span>
+                                    <span class="info-value" id="chapter">${questionData.chapter}</span>
+                                </div>
+                                <div class="info-row">
+                                    <span class="info-label">难度:</span>
+                                    <span class="info-value" id="difficulty">${questionData.difficultyName}</span>
+                                </div>
+                                <div class="info-row">
+                                    <span class="info-label">添加时间:</span>
+                                    <span class="info-value" id="addDate">${questionData.addDate.toLocaleDateString()}</span>
+                                </div>
+                                <div class="info-row">
+                                    <span class="info-label">最近复习:</span>
+                                    <span class="info-value" id="lastReviewDate">${questionData.lastReviewDate ? 
+                                        questionData.lastReviewDate.toLocaleDateString() : '暂无'}</span>
+                                </div>
+                                <div class="info-row">
+                                    <span class="info-label">下次复习:</span>
+                                    <span class="info-value" id="nextReviewDate">${questionData.nextReviewDate.toLocaleDateString()}</span>
+                                </div>
+                                <div class="info-row">
+                                    <span class="info-label">掌握状态:</span>
+                                    <span class="info-value" id="masteryStatus">${masteryStatus}</span>
+                                </div>
+                            </div>
+                            
+                            <!-- 掌握度进度条 -->
+                            <div class="mastery-progress-section">
+                                <h3>掌握度</h3>
+                                <div class="mastery-progress-container">
+                                    <div class="mastery-progress">
+                                        <svg width="120" height="120" viewBox="0 0 120 120">
+                                            <circle class="mastery-progress-circle-bg" cx="60" cy="60" r="50"></circle>
+                                            <circle class="mastery-progress-circle-fill" cx="60" cy="60" r="50" 
+                                                    stroke-dasharray="${circumference}" stroke-dashoffset="${strokeDashoffset}" style="stroke: ${questionData.masteryLevel === 5 ? 'var(--ant-success)' : questionData.masteryLevel >= 3 ? '#36cfc9' : questionData.masteryLevel > 0 ? '#36cfc9' : 'var(--ant-border-secondary)'}"></circle>
+                                        </svg>
+                                        <div class="mastery-progress-text" style="color: ${questionData.masteryLevel === 5 ? 'var(--ant-success)' : questionData.masteryLevel >= 3 ? '#36cfc9' : questionData.masteryLevel > 0 ? '#36cfc9' : 'var(--ant-text-tertiary)'}">${Math.round(masteryPercentage)}%</div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- 错题图片 -->
+                            <div class="question-image-section">
+                                <h3>错题内容</h3>
+                                <div class="question-image-container">
+                                    <img src="${questionData.imageUrl}" alt="错题图片" id="questionImage">
+                                </div>
+                            </div>
+                            
+                            <!-- 标签 -->
+                            <div class="question-tags-section">
+                                <h3>标签</h3>
+                                <div class="question-tags" id="questionTags">
+                                    ${questionData.tags.map(tag => `<span class="tag">${tag}</span>`).join('')}
+                                </div>
+                            </div>
+                            
+                            <!-- 错题分析 -->
+                            <div class="question-analysis-section">
+                                <h3>错题分析</h3>
+                                <div class="analysis-content" id="errorAnalysis">
+                                    ${questionData.errorAnalysis}
+                                </div>
+                            </div>
+                            
+                            <!-- 正确解法 -->
+                            <div class="question-solution-section">
+                                <h3>正确解法</h3>
+                                <div class="solution-content" id="correctSolution">
+                                    ${questionData.correctSolution}
+                                </div>
+                            </div>
+                            
+                            <!-- AI讲解 -->
+                            <div class="ai-explanation-section">
+                                <h3>AI讲解</h3>
+                                <div class="ai-content" id="aiExplanation">
+                                    ${questionData.aiExplanation}
+                                </div>
+                            </div>
+                        `;
+                    } else {
+                        // 如果没有找到错题，显示错误信息
+                        container.innerHTML = '<div class="error">未找到该错题</div>';
+                        setTimeout(() => {
+                            window.location.href = '../index.html';
+                        }, 2000);
+                    }
+                } catch (error) {
+                    console.error('加载错题详情时出错:', error);
+                    container.innerHTML = '<div class="error">加载失败，请稍后重试</div>';
+                }
+            }, 500); // 模拟网络延迟
+            
+            // 返回按钮
+            document.getElementById('backBtn').addEventListener('click', function() {
+                window.location.href = '../index.html';
+            });
+            
+            // 编辑按钮
+            document.getElementById('editBtn').addEventListener('click', function() {
+                // 跳转到编辑页面
+                alert('跳转到编辑页面');
+            });
+            
+            // 复习按钮
+            document.getElementById('reviewBtn').addEventListener('click', function() {
+                // 执行复习操作
+                alert('开始复习');
+            });
+        });
+    </script>
+</body>
+</html>

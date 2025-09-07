@@ -23,6 +23,66 @@ class DataManager {
         };
     }
 
+    // 添加新错题
+    addQuestion(question) {
+        // 为新错题分配ID
+        question.id = this.mockData.questions.length > 0 ? 
+            Math.max(...this.mockData.questions.map(q => q.id)) + 1 : 1;
+        
+        // 添加到错题列表
+        this.mockData.questions.push(question);
+        
+        // 更新统计数据
+        this.updateStatistics();
+        
+        return question;
+    }
+
+    // 更新错题掌握度
+    updateQuestionMastery(questionId, masteryLevel) {
+        const question = this.mockData.questions.find(q => q.id === questionId);
+        if (question) {
+            question.masteryLevel = masteryLevel;
+            
+            // 更新艾宾浩斯状态
+            if (masteryLevel === 5) {
+                question.reviewStatus = 'completed';
+            } else if (masteryLevel >= 3) {
+                question.reviewStatus = question.nextReviewDate < new Date() ? 'overdue' : 'upcoming';
+            } else {
+                question.reviewStatus = question.nextReviewDate < new Date() ? 'overdue' : 'upcoming';
+            }
+            
+            // 更新统计数据
+            this.updateStatistics();
+            
+            return question;
+        }
+        return null;
+    }
+
+    // 更新统计数据
+    updateStatistics() {
+        const totalQuestions = this.mockData.questions.length;
+        const masteredQuestions = this.mockData.questions.filter(q => q.masteryLevel === 5).length;
+        const pendingReview = totalQuestions - masteredQuestions;
+        
+        this.currentUser.totalQuestions = totalQuestions;
+        this.currentUser.masteredQuestions = masteredQuestions;
+        this.currentUser.pendingReview = pendingReview;
+        
+        // 更新统计面板数据
+        if (this.mockData.statistics) {
+            this.mockData.statistics.overview.totalQuestions = totalQuestions;
+            this.mockData.statistics.overview.mastered = masteredQuestions;
+            this.mockData.statistics.overview.pending = pendingReview;
+            
+            // 重新计算掌握率
+            this.mockData.statistics.overview.masteryRate = totalQuestions > 0 ? 
+                Math.round((masteredQuestions / totalQuestions) * 1000) / 10 : 0;
+        }
+    }
+
     initializeMockData() {
         // 学科映射
         const subjects = ['math', 'chinese', 'english', 'physics'];
@@ -297,6 +357,12 @@ class DataManager {
         return filtered;
     }
 
+    // 获取单个错题详情
+    getQuestionById(id) {
+        const questionId = parseInt(id);
+        return this.mockData.questions.find(q => q.id === questionId);
+    }
+
     // 搜索方法
     searchQuestions(keyword) {
         if (!keyword.trim()) return this.getFilteredQuestions();
@@ -334,36 +400,96 @@ class UIRenderer {
         card.className = 'question-card';
         card.setAttribute('data-id', question.id);
         
-        const ebbinghausText = question.ebbinghausDays < 0 ? `D${question.ebbinghausDays}` : `D+${question.ebbinghausDays}`;
-        const ebbinghausClass = question.reviewStatus === 'overdue' ? 'overdue' : (question.reviewStatus === 'today' ? 'today' : '');
+        // 根据掌握度设置卡片状态类
+        if (question.masteryLevel === 5) {
+            card.classList.add('mastered');
+        } else if (question.masteryLevel > 0 && question.masteryLevel < 3) {
+            card.classList.add('need-improvement');
+        } else if (question.masteryLevel === 0) {
+            card.classList.add('not-reviewed');
+        }
+        
+        // 计算掌握度百分比
+        const masteryPercentage = (question.masteryLevel / 5) * 100;
+        const circumference = 2 * Math.PI * 50; // 2πr, r=50
+        const strokeDashoffset = circumference - (masteryPercentage / 100) * circumference;
+        
+        // 根据艾宾浩斯状态设置文本
+        const nextReviewText = question.nextReviewDate.toLocaleDateString();
+        
+        // 是否显示已掌握角标
+        const showMasteredBadge = question.masteryLevel === 5;
+        
+        // 题号（用于hover显示）
+        const questionId = `题${question.id.toString().padStart(3, '0')}`;
         
         card.innerHTML = `
-            <div class="card-badges">
-                <span class="ebbinghaus-badge ${ebbinghausClass}" title="艾宾浩斯复习状态">${ebbinghausText}</span>
-                ${question.clusterId ? `<span class="cluster-badge" title="重复题簇">🔗${question.clusterSize}</span>` : ''}
-            </div>
             <div class="card-header">
-                <span class="question-id">题号: ${String(question.id).padStart(3, '0')}</span>
-                <span class="update-time">${question.addDate.toLocaleDateString()}</span>
+                <div class="card-meta">
+                    <span class="subject-tag ${question.subject}">${question.subjectName}</span>
+                </div>
+                <div class="card-status">
+                    <span class="review-status ${question.reviewStatus}" 
+                          title="${question.reviewStatus === 'overdue' ? '已逾期' : question.reviewStatus === 'today' ? '今日复习' : '即将到来'}">
+                        ${question.reviewStatus === 'overdue' ? '逾期' : question.reviewStatus === 'today' ? '今日' : '即将'}
+                    </span>
+                </div>
             </div>
-            <div class="card-image">
-                <img src="${question.imageUrl}" alt="错题图片" loading="lazy">
+            
+            <div class="mastery-progress-container">
+                <div class="mastery-progress">
+                    <svg width="120" height="120" viewBox="0 0 120 120">
+                        <circle class="mastery-progress-circle-bg" cx="60" cy="60" r="50"></circle>
+                        <circle class="mastery-progress-circle-fill" cx="60" cy="60" r="50" 
+                                stroke-dasharray="${circumference}" 
+                                stroke-dashoffset="${strokeDashoffset}"></circle>
+                    </svg>
+                    <div class="mastery-progress-text">${Math.round(masteryPercentage)}%</div>
+                </div>
+                
+                <!-- 角标：已掌握状态 -->
+                ${showMasteredBadge ? `
+                <div class="ant-badge" title="已掌握">
+                    <span class="ant-badge-status">
+                        <span class="ant-badge-status-dot ant-badge-status-success"></span>
+                    </span>
+                </div>` : ''}
             </div>
+            
             <div class="card-content">
-                <div class="question-title">${question.title}</div>
-                <div class="card-tags">
-                    <span class="tag subject-tag ${question.subject}">${question.subjectName}</span>
-                    ${question.tags.map(tag => `<span class="tag">${tag}</span>`).join('')}
-                    <span class="tag difficulty-tag ${question.difficulty}">${question.difficultyName}</span>
+                <div class="question-preview">
+                    <img src="${question.imageUrl}" alt="错题图片" loading="lazy">
+                </div>
+                
+                <div class="card-info">
+                    <div class="question-tags">
+                        ${question.tags.map(tag => `<span class="tag">${tag}</span>`).join('')}
+                    </div>
+                    <div class="update-time" title="下次复习: ${nextReviewText}">${nextReviewText}</div>
                 </div>
             </div>
-            <div class="card-footer">
-                <div class="mastery-stars">
-                    ${this.renderStars(question.masteryLevel)}
-                </div>
-                <div class="review-count">复习${question.reviewCount}次</div>
+            
+            <!-- Hover时显示的详细信息 -->
+            <div class="card-hover-info" style="display: none;">
+                <div class="hover-question-id">${questionId}</div>
+                <div class="hover-next-review">下次复习: ${nextReviewText}</div>
             </div>
         `;
+        
+        // 添加hover事件处理
+        card.addEventListener('mouseenter', function() {
+            const hoverInfo = this.querySelector('.card-hover-info');
+            if (hoverInfo) {
+                hoverInfo.style.display = 'block';
+            }
+        });
+        
+        card.addEventListener('mouseleave', function() {
+            const hoverInfo = this.querySelector('.card-hover-info');
+            if (hoverInfo) {
+                hoverInfo.style.display = 'none';
+            }
+        });
         
         return card;
     }
@@ -483,6 +609,7 @@ class AppController {
     constructor() {
         this.dataManager = new DataManager();
         this.uiRenderer = new UIRenderer(this.dataManager);
+        this.currentSort = 'nextReview'; // 默认排序方式
         this.init();
     }
 
@@ -503,6 +630,29 @@ class AppController {
                 this.updateActiveNav(item);
             });
         });
+
+        // 新增错题按钮
+        const addQuestionBtn = document.getElementById('addQuestionBtn');
+        if (addQuestionBtn) {
+            addQuestionBtn.addEventListener('click', () => {
+                window.location.href = 'pages/question-add.html';
+            });
+        }
+
+        // 使用说明切换按钮
+        const toggleInstructionsBtn = document.getElementById('toggleInstructions');
+        const usageInstructions = document.getElementById('usageInstructions');
+        if (toggleInstructionsBtn && usageInstructions) {
+            toggleInstructionsBtn.addEventListener('click', () => {
+                if (usageInstructions.style.display === 'none') {
+                    usageInstructions.style.display = 'block';
+                    toggleInstructionsBtn.innerHTML = '<i class="fas fa-info-circle"></i> 隐藏说明';
+                } else {
+                    usageInstructions.style.display = 'none';
+                    toggleInstructionsBtn.innerHTML = '<i class="fas fa-info-circle"></i> 使用说明';
+                }
+            });
+        }
 
         // 筛选按钮
         const openFilterBtn = document.getElementById('openFilter');
@@ -548,7 +698,7 @@ class AppController {
             searchInput.addEventListener('input', (e) => {
                 const keyword = e.target.value;
                 const filteredQuestions = this.dataManager.searchQuestions(keyword);
-                this.uiRenderer.renderQuestionCards(filteredQuestions);
+                this.switchSort(this.currentSort, filteredQuestions);
             });
         }
 
@@ -559,6 +709,16 @@ class AppController {
                 const view = btn.dataset.view;
                 this.switchView(view);
                 this.updateActiveView(btn);
+            });
+        });
+
+        // 排序切换
+        document.querySelectorAll('.ant-segmented-item').forEach(item => {
+            item.addEventListener('click', (e) => {
+                e.preventDefault();
+                const sortType = item.dataset.sort;
+                this.switchSort(sortType);
+                this.updateActiveSort(item);
             });
         });
 
@@ -599,6 +759,20 @@ class AppController {
         
         // 渲染AI对话
         this.uiRenderer.renderAIDialog();
+        
+        // 更新页面统计信息
+        this.updatePageStats();
+    }
+
+    // 更新页面统计信息
+    updatePageStats() {
+        const totalQuestionsElement = document.getElementById('totalQuestions');
+        const masteredQuestionsElement = document.getElementById('masteredQuestions');
+        
+        if (totalQuestionsElement && masteredQuestionsElement) {
+            totalQuestionsElement.textContent = this.dataManager.currentUser.totalQuestions;
+            masteredQuestionsElement.textContent = this.dataManager.currentUser.masteredQuestions;
+        }
     }
 
     setupPageNavigation() {
@@ -726,6 +900,9 @@ class AppController {
 
         // 重新渲染错题卡片
         this.uiRenderer.renderQuestionCards();
+        
+        // 更新页面统计信息
+        this.updatePageStats();
     }
 
     resetFilters() {
@@ -748,14 +925,14 @@ class AppController {
 
         // 重新渲染错题卡片
         this.uiRenderer.renderQuestionCards();
+        
+        // 更新页面统计信息
+        this.updatePageStats();
     }
 
     showQuestionDetail(questionId) {
-        // 这里可以实现显示错题详情的逻辑
-        console.log('显示错题详情:', questionId);
-        
-        // 示例：显示一个简单的模态框
-        alert(`显示错题 ${questionId} 的详情`);
+        // 跳转到错题详情页面
+        window.location.href = `pages/question-detail.html?id=${questionId}`;
     }
 
     sendAIMessage(content) {
@@ -791,6 +968,39 @@ class AppController {
 
         // 滚动到底部
         chatContainer.scrollTop = chatContainer.scrollHeight;
+    }
+
+    switchSort(sortType, questions = null) {
+        this.currentSort = sortType;
+        let sortedQuestions = questions || [...this.dataManager.getFilteredQuestions()];
+        
+        switch(sortType) {
+            case 'nextReview':
+                // 按下次复习时间升序排列（艾宾浩斯）
+                sortedQuestions.sort((a, b) => a.nextReviewDate - b.nextReviewDate);
+                break;
+            case 'recentAdded':
+                // 按创建时间倒序排列
+                sortedQuestions.sort((a, b) => b.addDate - a.addDate);
+                break;
+            case 'mastery':
+                // 按掌握度降序排列
+                sortedQuestions.sort((a, b) => b.masteryLevel - a.masteryLevel);
+                break;
+            default:
+                // 默认按下次复习时间排序
+                sortedQuestions.sort((a, b) => a.nextReviewDate - b.nextReviewDate);
+        }
+        
+        // 重新渲染卡片
+        this.uiRenderer.renderQuestionCards(sortedQuestions);
+    }
+
+    updateActiveSort(activeItem) {
+        document.querySelectorAll('.ant-segmented-item').forEach(item => {
+            item.classList.remove('ant-segmented-item-selected');
+        });
+        activeItem.classList.add('ant-segmented-item-selected');
     }
 }
 

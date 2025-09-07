@@ -196,7 +196,7 @@
                                 <i class="fas fa-filter"></i>
                                 筛选
                             </button>
-                            <button class="ant-btn ant-btn-primary">
+                            <button class="ant-btn ant-btn-primary" id="addQuestionBtn">
                                 <i class="fas fa-plus"></i>
                                 新增错题
                             </button>
@@ -205,12 +205,20 @@
                     
                     <div class="toolbar">
                         <div class="toolbar-left">
-                            <select class="sort-select">
-                                <option>按时间倒序</option>
-                                <option>按时间正序</option>
-                                <option>按掌握度</option>
-                                <option>按复习时间</option>
-                            </select>
+                            <!-- AntD Segmented组件 -->
+                            <div class="ant-segmented">
+                                <div class="ant-segmented-group">
+                                    <div class="ant-segmented-item ant-segmented-item-selected" data-sort="nextReview">
+                                        <div class="ant-segmented-item-label">下次复习</div>
+                                    </div>
+                                    <div class="ant-segmented-item" data-sort="recentAdded">
+                                        <div class="ant-segmented-item-label">最近添加</div>
+                                    </div>
+                                    <div class="ant-segmented-item" data-sort="mastery">
+                                        <div class="ant-segmented-item-label">掌握度</div>
+                                    </div>
+                                </div>
+                            </div>
                             
                             <div class="view-toggle">
                                 <button class="view-btn active" data-view="grid">
@@ -222,11 +230,28 @@
                                     列表
                                 </button>
                             </div>
+                            
+                            <button class="ant-btn ant-btn-default" id="toggleInstructions" style="margin-left: 12px;">
+                                <i class="fas fa-info-circle"></i>
+                                使用说明
+                            </button>
                         </div>
                         
                         <div class="toolbar-right">
-                            <div class="page-extra">共 247 道错题，已掌握 189 道</div>
+                            <div class="page-extra">共 <span id="totalQuestions">247</span> 道错题，已掌握 <span id="masteredQuestions">189</span> 道</div>
                         </div>
+                    </div>
+                    
+                    <!-- 使用说明 -->
+                    <div class="usage-instructions" id="usageInstructions" style="background: var(--ant-primary-light); border-radius: var(--ant-border-radius); padding: 16px; margin-bottom: 16px; display: none;">
+                        <h4 style="margin-top: 0; color: var(--ant-primary);">使用说明</h4>
+                        <ul style="margin: 0; padding-left: 20px;">
+                            <li>鼠标悬停在卡片上可查看题号和下次复习日期</li>
+                            <li>点击卡片可查看错题详情</li>
+                            <li>使用顶部筛选器可按学科、难度等条件筛选错题</li>
+                            <li>通过排序选项可按不同方式排列错题</li>
+                            <li>掌握度显示：已掌握（绿色角标）、待加强（薄荷绿进度条）、未复习（灰色进度条）</li>
+                        </ul>
                     </div>
                     
                     <div class="questions-grid">
