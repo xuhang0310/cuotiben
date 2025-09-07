@@ -198,60 +198,20 @@
                     const questionData = questionId ? dataManager.getQuestionById(questionId) : null;
                     
                     if (questionData) {
-                        // 填充页面数据
-                        document.getElementById('questionId').textContent = questionData.id.toString().padStart(3, '0');
-                        document.getElementById('subject').textContent = questionData.subjectName;
-                        document.getElementById('chapter').textContent = questionData.chapter;
-                        document.getElementById('difficulty').textContent = questionData.difficultyName;
-                        document.getElementById('addDate').textContent = questionData.addDate.toLocaleDateString();
-                        document.getElementById('lastReviewDate').textContent = questionData.lastReviewDate ? 
-                            questionData.lastReviewDate.toLocaleDateString() : '暂无';
-                        document.getElementById('nextReviewDate').textContent = questionData.nextReviewDate.toLocaleDateString();
-                        document.getElementById('questionImage').src = questionData.imageUrl;
-                        document.getElementById('errorAnalysis').textContent = questionData.errorAnalysis;
-                        document.getElementById('correctSolution').textContent = questionData.correctSolution;
-                        document.getElementById('aiExplanation').textContent = questionData.aiExplanation;
-                        
-                        // 填充标签
-                        const tagContainer = document.getElementById('questionTags');
-                        tagContainer.innerHTML = '';
-                        questionData.tags.forEach(tag => {
-                            const tagElement = document.createElement('span');
-                            tagElement.className = 'tag';
-                            tagElement.textContent = tag;
-                            tagContainer.appendChild(tagElement);
-                        });
-                        
-                        // 设置掌握度进度条
+                        // 计算掌握度与进度条参数
                         const masteryPercentage = (questionData.masteryLevel / 5) * 100;
                         const circumference = 2 * Math.PI * 50; // 2πr, r=50
                         const strokeDashoffset = circumference - (masteryPercentage / 100) * circumference;
-                        
-                        const progressCircle = document.querySelector('.mastery-progress-circle-fill');
-                        const progressText = document.querySelector('.mastery-progress-text');
-                        
-                        progressCircle.style.strokeDasharray = circumference;
-                        progressCircle.style.strokeDashoffset = strokeDashoffset;
-                        progressText.textContent = `${Math.round(masteryPercentage)}%`;
-                        
                         // 根据掌握度设置颜色和状态文本
                         let masteryStatus = '';
                         if (questionData.masteryLevel === 5) {
                             masteryStatus = '已掌握';
-                            progressCircle.style.stroke = 'var(--ant-success)';
-                            progressText.style.color = 'var(--ant-success)';
                         } else if (questionData.masteryLevel >= 3) {
                             masteryStatus = '待加强';
-                            progressCircle.style.stroke = '#36cfc9'; // 薄荷绿
-                            progressText.style.color = '#36cfc9';
                         } else if (questionData.masteryLevel > 0) {
                             masteryStatus = '待加强';
-                            progressCircle.style.stroke = '#36cfc9'; // 薄荷绿
-                            progressText.style.color = '#36cfc9';
                         } else {
                             masteryStatus = '未复习';
-                            progressCircle.style.stroke = 'var(--ant-border-secondary)';
-                            progressText.style.color = 'var(--ant-text-tertiary)';
                         }
                         
                         // 显示内容
