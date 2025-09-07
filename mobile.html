@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>错题本 - 手机版</title>
+    <link rel="stylesheet" href="mobile.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="错题本">
+</head>
+<body>
+    <!-- 整体容器 -->
+    <div class="mobile-app">
+        <!-- 顶部导航栏 -->
+        <header class="mobile-header">
+            <div class="header-content">
+                <div class="header-left">
+                    <h1 class="app-title">错题本</h1>
+                </div>
+                <div class="header-right">
+                    <button class="header-btn search-btn">
+                        <svg viewBox="0 0 1024 1024" width="18" height="18">
+                            <path d="M909.6 854.5L649.9 594.8C690.2 542.7 712 479 712 412c0-80.2-31.3-155.4-87.9-212.1-56.6-56.7-132-87.9-212.1-87.9s-155.5 31.3-212.1 87.9C143.2 256.5 112 331.8 112 412c0 80.1 31.3 155.5 87.9 212.1C256.5 680.8 331.8 712 412 712c67 0 130.6-21.8 182.7-62l259.7 259.6a8.2 8.2 0 0011.6 0l43.6-43.5a8.2 8.2 0 000-11.6zM570.4 570.4C528 612.7 471.8 636 412 636s-116-23.3-158.4-65.6C211.3 528 188 471.8 188 412s23.3-116.1 65.6-158.4C296 211.3 352.2 188 412 188s116.1 23.2 158.4 65.6S636 352.2 636 412s-23.3 116.1-65.6 158.4z"/>
+                        </svg>
+                    </button>
+                    <button class="header-btn notification-btn">
+                        <svg viewBox="0 0 1024 1024" width="18" height="18">
+                            <path d="M816 768h-24V428c0-141.1-104.3-257.8-240-277.2V112c0-22.1-17.9-40-40-40s-40 17.9-40 40v38.8C336.3 170.2 232 286.9 232 428v340h-24c-17.7 0-32 14.3-32 32v32c0 4.4 3.6 8 8 8h216c0 61.8 50.2 112 112 112s112-50.2 112-112h216c4.4 0 8-3.6 8-8v-32c0-17.7-14.3-32-32-32zM512 888c-26.5 0-48-21.5-48-48h96c0 26.5-21.5 48-48 48zM304 768V428c0-55.6 21.6-107.8 60.9-147.1S456.4 220 512 220c55.6 0 107.8 21.6 147.1 60.9S720 372.4 720 428v340H304z"/>
+                        </svg>
+                        <span class="notification-badge">3</span>
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <!-- 主内容区 -->
+        <main class="mobile-main">
+            <!-- 错题列表页面 -->
+            <div class="mobile-page active" id="questions">
+                <!-- 筛选栏 -->
+                <div class="filter-section">
+                    <div class="filter-scroll">
+                        <button class="filter-chip active" data-filter="all">全部</button>
+                        <button class="filter-chip" data-filter="math">数学</button>
+                        <button class="filter-chip" data-filter="chinese">语文</button>
+                        <button class="filter-chip" data-filter="english">英语</button>
+                        <button class="filter-chip" data-filter="need-review">待复习</button>
+                    </div>
+                </div>
+
+                <!-- 错题卡片列表 -->
+                <div class="question-list">
+                    <!-- 单个错题卡片 -->
+                    <div class="mobile-question-card" data-id="1">
+                        <div class="card-header">
+                            <div class="card-meta">
+                                <span class="question-number">#001</span>
+                                <span class="subject-tag math">数学</span>
+                            </div>
+                            <div class="card-status">
+                                <span class="review-badge urgent">D-2</span>
+                            </div>
+                        </div>
+                        <div class="card-content">
+                            <div class="question-preview">
+                                <img src="https://placehold.co/300x120?text=数学题目" alt="题目预览" loading="lazy">
+                            </div>
+                            <div class="card-info">
+                                <div class="tags">
+                                    <span class="tag">函数</span>
+                                    <span class="tag">中等</span>
+                                </div>
+                                <div class="progress-info">
+                                    <div class="mastery-stars">
+                                        <span class="star filled">★</span>
+                                        <span class="star filled">★</span>
+                                        <span class="star">★</span>
+                                        <span class="star">★</span>
+                                        <span class="star">★</span>
+                                    </div>
+                                    <span class="update-time">5月15日</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-actions">
+                            <button class="action-btn secondary">编辑</button>
+                            <button class="action-btn primary">查看</button>
+                        </div>
+                    </div>
+
+                    <div class="mobile-question-card" data-id="2">
+                        <div class="card-header">
+                            <div class="card-meta">
+                                <span class="question-number">#002</span>
+                                <span class="subject-tag chinese">语文</span>
+                            </div>
+                            <div class="card-status">
+                                <span class="review-badge normal">D+1</span>
+                            </div>
+                        </div>
+                        <div class="card-content">
+                            <div class="question-preview">
+                                <img src="https://placehold.co/300x120?text=语文阅读" alt="题目预览" loading="lazy">
+                            </div>
+                            <div class="card-info">
+                                <div class="tags">
+                                    <span class="tag">阅读理解</span>
+                                    <span class="tag">困难</span>
+                                </div>
+                                <div class="progress-info">
+                                    <div class="mastery-stars">
+                                        <span class="star filled">★</span>
+                                        <span class="star">★</span>
+                                        <span class="star">★</span>
+                                        <span class="star">★</span>
+                                        <span class="star">★</span>
+                                    </div>
+                                    <span class="update-time">5月16日</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-actions">
+                            <button class="action-btn secondary">编辑</button>
+                            <button class="action-btn primary">查看</button>
+                        </div>
+                    </div>
+
+                    <div class="mobile-question-card" data-id="3">
+                        <div class="card-header">
+                            <div class="card-meta">
+                                <span class="question-number">#003</span>
+                                <span class="subject-tag english">英语</span>
+                            </div>
+                            <div class="card-status">
+                                <span class="review-badge completed">已掌握</span>
+                            </div>
+                        </div>
+                        <div class="card-content">
+                            <div class="question-preview">
+                                <img src="https://placehold.co/300x120?text=英语语法" alt="题目预览" loading="lazy">
+                            </div>
+                            <div class="card-info">
+                                <div class="tags">
+                                    <span class="tag">语法</span>
+                                    <span class="tag">简单</span>
+                                </div>
+                                <div class="progress-info">
+                                    <div class="mastery-stars">
+                                        <span class="star filled">★</span>
+                                        <span class="star filled">★</span>
+                                        <span class="star filled">★</span>
+                                        <span class="star filled">★</span>
+                                        <span class="star filled">★</span>
+                                    </div>
+                                    <span class="update-time">5月17日</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-actions">
+                            <button class="action-btn secondary">编辑</button>
+                            <button class="action-btn primary">查看</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 复习页面 -->
+            <div class="mobile-page" id="review">
+                <div class="review-header">
+                    <h2>今日复习计划</h2>
+                    <div class="review-progress">
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 60%"></div>
+                        </div>
+                        <span class="progress-text">3/5 完成</span>
+                    </div>
+                </div>
+                
+                <div class="review-cards">
+                    <div class="review-item urgent">
+                        <div class="review-subject">数学 - 函数</div>
+                        <div class="review-count">2题</div>
+                        <div class="review-deadline">今天截止</div>
+                    </div>
+                    <div class="review-item normal">
+                        <div class="review-subject">语文 - 文言文</div>
+                        <div class="review-count">1题</div>
+                        <div class="review-deadline">明天截止</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- AI助手页面 -->
+            <div class="mobile-page" id="ai">
+                <div class="ai-header">
+                    <h2>AI学习助手</h2>
+                    <div class="ai-status">
+                        <span class="status-dot active"></span>
+                        <span>在线</span>
+                    </div>
+                </div>
+                
+                <div class="ai-features">
+                    <div class="ai-card">
+                        <div class="ai-icon">🧠</div>
+                        <h3>智能讲解</h3>
+                        <p>AI为你详细讲解每道错题的解题思路</p>
+                    </div>
+                    <div class="ai-card">
+                        <div class="ai-icon">🔊</div>
+                        <h3>语音讲解</h3>
+                        <p>支持语音播放，随时随地学习</p>
+                    </div>
+                    <div class="ai-card">
+                        <div class="ai-icon">📊</div>
+                        <h3>学习分析</h3>
+                        <p>分析学习薄弱点，推荐复习重点</p>
+                    </div>
+                </div>
+            </div>
+
+
+            <!-- 我的页面 -->
+            <div class="mobile-page" id="profile">
+                <div class="profile-header">
+                    <div class="avatar-section">
+                        <div class="user-avatar">
+                            <img src="https://placehold.co/80x80?text=头像" alt="用户头像">
+                        </div>
+                        <div class="user-info">
+                            <h3>小明同学</h3>
+                            <p>已学习 30 天</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 学习数据概览 -->
+                <div class="stats-overview-mini">
+                    <div class="stats-mini-card">
+                        <div class="stat-mini-number">24</div>
+                        <div class="stat-mini-label">总错题</div>
+                    </div>
+                    <div class="stats-mini-card">
+                        <div class="stat-mini-number">18</div>
+                        <div class="stat-mini-label">已掌握</div>
+                    </div>
+                    <div class="stats-mini-card">
+                        <div class="stat-mini-number">6</div>
+                        <div class="stat-mini-label">待复习</div>
+                    </div>
+                    <div class="stats-mini-card">
+                        <div class="stat-mini-number">75%</div>
+                        <div class="stat-mini-label">掌握率</div>
+                    </div>
+                </div>
+                
+                <div class="profile-menu">
+                    <div class="menu-group">
+                        <div class="menu-item" data-action="stats">
+                            <span class="menu-icon">📊</span>
+                            <span class="menu-label">详细统计</span>
+                            <span class="menu-arrow">></span>
+                        </div>
+                        <div class="menu-item" data-action="export">
+                            <span class="menu-icon">📁</span>
+                            <span class="menu-label">导出错题</span>
+                            <span class="menu-arrow">></span>
+                        </div>
+                        <div class="menu-item" data-action="share">
+                            <span class="menu-icon">🔗</span>
+                            <span class="menu-label">分享给老师</span>
+                            <span class="menu-arrow">></span>
+                        </div>
+                        <div class="menu-item">
+                            <span class="menu-icon">🌙</span>
+                            <span class="menu-label">深色模式</span>
+                            <div class="toggle-switch">
+                                <input type="checkbox" id="darkMode">
+                                <label for="darkMode"></label>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="menu-group">
+                        <div class="menu-item" data-action="help">
+                            <span class="menu-icon">❓</span>
+                            <span class="menu-label">帮助反馈</span>
+                            <span class="menu-arrow">></span>
+                        </div>
+                        <div class="menu-item" data-action="about">
+                            <span class="menu-icon">ℹ️</span>
+                            <span class="menu-label">关于我们</span>
+                            <span class="menu-arrow">></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- 底部导航栏 -->
+        <nav class="mobile-bottom-nav">
+            <div class="nav-item active" data-page="questions">
+                <svg viewBox="0 0 1024 1024" width="20" height="20">
+                    <path d="M832 64H192c-17.7 0-32 14.3-32 32v832c0 17.7 14.3 32 32 32h640c17.7 0 32-14.3 32-32V96c0-17.7-14.3-32-32-32zM668 345.9L621.5 292 567 346.4l-46.5-46.4L474.9 346 520 391.1 474.9 436 520.5 481.5l46.5-46.4L621.5 481l45.1-46.5L621 391.1 668 345.9zM220 756h584v60H220v-60zm0-166h584v60H220v-60zm0-166h584v60H220v-60z"/>
+                </svg>
+                <span class="nav-label">错题</span>
+            </div>
+            <div class="nav-item" data-page="review">
+                <svg viewBox="0 0 1024 1024" width="20" height="20">
+                    <path d="M512 64C264.6 64 64 264.6 64 512s200.6 448 448 448 448-200.6 448-448S759.4 64 512 64zm176.5 585.7l-28.6 39a7.99 7.99 0 01-11.2 1.7L483.3 569.8a7.92 7.92 0 01-3.3-6.5V288c0-4.4 3.6-8 8-8h48.1c4.4 0 8 3.6 8 8v247.5l142.8 103.1c3.6 2.5 4.4 7.5 1.8 11.1z"/>
+                </svg>
+                <span class="nav-label">复习</span>
+            </div>
+            <div class="nav-item add-btn">
+                <svg viewBox="0 0 1024 1024" width="24" height="24">
+                    <path d="M512 64C264.6 64 64 264.6 64 512s200.6 448 448 448 448-200.6 448-448S759.4 64 512 64zm192 472c0 4.4-3.6 8-8 8H544v152c0 4.4-3.6 8-8 8h-48c-4.4 0-8-3.6-8-8V544H328c-4.4 0-8-3.6-8-8v-48c0-4.4 3.6-8 8-8h152V328c0-4.4 3.6-8 8-8h48c4.4 0 8 3.6 8 8v152h152c4.4 0 8 3.6 8 8v48z"/>
+                </svg>
+            </div>
+            <div class="nav-item" data-page="ai">
+                <svg viewBox="0 0 1024 1024" width="20" height="20">
+                    <path d="M512 64C264.6 64 64 264.6 64 512s200.6 448 448 448 448-200.6 448-448S759.4 64 512 64zm32 664c0 4.4-3.6 8-8 8h-48c-4.4 0-8-3.6-8-8V456c0-4.4 3.6-8 8-8h48c4.4 0 8 3.6 8 8v272zm-32-344a48.01 48.01 0 010-96 48.01 48.01 0 010 96z"/>
+                </svg>
+                <span class="nav-label">AI助手</span>
+            </div>
+            <div class="nav-item" data-page="profile">
+                <svg viewBox="0 0 1024 1024" width="20" height="20">
+                    <path d="M858.5 763.6a374 374 0 00-80.6-119.5 375.63 375.63 0 00-119.5-80.6c-.4-.2-.8-.3-1.2-.5C719.5 518 760 444.7 760 362c0-137-111-248-248-248S264 225 264 362c0 82.7 40.5 156 102.8 201.1-.4.2-.8.3-1.2.5-44.8 18.9-85 46-119.5 80.6a375.63 375.63 0 00-80.6 119.5A371.7 371.7 0 00136 901.8a8 8 0 008 8.2h60c4.4 0 7.9-3.5 8-7.8 2-77.2 33-149.5 87.8-204.3 56.7-56.7 132-87.9 212.2-87.9s155.5 31.2 212.2 87.9C779 752.7 810 825 812 902.2c.1 4.4 3.6 7.8 8 7.8h60a8 8 0 008-8.2c-1-47.8-10.9-94.3-29.5-138.2zM512 534c-45.9 0-89.1-17.9-121.6-50.4S340 407.9 340 362c0-45.9 17.9-89.1 50.4-121.6S466.1 190 512 190s89.1 17.9 121.6 50.4S684 316.1 684 362c0 45.9-17.9 89.1-50.4 121.6S557.9 534 512 534z"/>
+                </svg>
+                <span class="nav-label">我的</span>
+            </div>
+        </nav>
+
+        <!-- 浮动操作按钮 -->
+        <button class="fab-btn" id="addQuestionFab">
+            <svg viewBox="0 0 1024 1024" width="24" height="24">
+                <path d="M512 64C264.6 64 64 264.6 64 512s200.6 448 448 448 448-200.6 448-448S759.4 64 512 64zm192 472c0 4.4-3.6 8-8 8H544v152c0 4.4-3.6 8-8 8h-48c-4.4 0-8-3.6-8-8V544H328c-4.4 0-8-3.6-8-8v-48c0-4.4 3.6-8 8-8h152V328c0-4.4 3.6-8 8-8h48c4.4 0 8 3.6 8 8v152h152c4.4 0 8 3.6 8 8v48z"/>
+            </svg>
+        </button>
+    </div>
+
+    <!-- 错题详情抽屉 -->
+    <div class="question-drawer" id="questionDrawer">
+        <div class="drawer-header">
+            <button class="drawer-close" id="drawerClose">×</button>
+            <h3>错题详情</h3>
+            <button class="drawer-action">编辑</button>
+        </div>
+        <div class="drawer-content">
+            <div class="question-detail">
+                <div class="question-image">
+                    <img src="https://placehold.co/300x200?text=题目详情" alt="题目详情">
+                </div>
+                <div class="question-meta">
+                    <div class="subject-info">
+                        <span class="subject-tag math">数学</span>
+                        <span class="difficulty">中等</span>
+                    </div>
+                    <div class="question-tags">
+                        <span class="tag">函数</span>
+                        <span class="tag">求导</span>
+                    </div>
+                </div>
+                <div class="mastery-section">
+                    <h4>掌握度评分</h4>
+                    <div class="mastery-rating">
+                        <span class="star" data-rating="1">★</span>
+                        <span class="star" data-rating="2">★</span>
+                        <span class="star" data-rating="3">★</span>
+                        <span class="star" data-rating="4">★</span>
+                        <span class="star" data-rating="5">★</span>
+                    </div>
+                </div>
+                <div class="explanation-section">
+                    <h4>错因分析</h4>
+                    <p>对函数概念理解不清晰，没有掌握复合函数的求导法则。</p>
+                </div>
+                <div class="ai-section">
+                    <h4>AI智能讲解</h4>
+                    <button class="ai-explain-btn">
+                        <span class="ai-icon">🧠</span>
+                        生成AI讲解
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div class="drawer-footer">
+            <button class="btn secondary">删除</button>
+            <button class="btn primary">开始复习</button>
+        </div>
+    </div>
+
+    <!-- 详细统计模态框 -->
+    <div class="stats-modal" id="statsModal">
+        <div class="modal-header">
+            <button class="modal-close" id="statsModalClose">×</button>
+            <h3>详细统计</h3>
+            <div class="time-selector">
+                <button class="time-btn active">本周</button>
+                <button class="time-btn">本月</button>
+            </div>
+        </div>
+        <div class="modal-content">
+            <div class="stats-overview">
+                <div class="stat-card">
+                    <div class="stat-number">24</div>
+                    <div class="stat-label">总错题</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">18</div>
+                    <div class="stat-label">已掌握</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">6</div>
+                    <div class="stat-label">待复习</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">75%</div>
+                    <div class="stat-label">掌握率</div>
+                </div>
+            </div>
+            
+            <div class="chart-section">
+                <h3>学科分布</h3>
+                <div class="subject-chart">
+                    <div class="chart-item">
+                        <div class="chart-bar math" style="width: 40%"></div>
+                        <span class="chart-label">数学 40%</span>
+                    </div>
+                    <div class="chart-item">
+                        <div class="chart-bar chinese" style="width: 35%"></div>
+                        <span class="chart-label">语文 35%</span>
+                    </div>
+                    <div class="chart-item">
+                        <div class="chart-bar english" style="width: 25%"></div>
+                        <span class="chart-label">英语 25%</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="chart-section">
+                <h3>本周学习趋势</h3>
+                <div class="trend-chart">
+                    <div class="trend-item">
+                        <div class="trend-day">周一</div>
+                        <div class="trend-bar" style="height: 60%"></div>
+                        <div class="trend-count">3题</div>
+                    </div>
+                    <div class="trend-item">
+                        <div class="trend-day">周二</div>
+                        <div class="trend-bar" style="height: 80%"></div>
+                        <div class="trend-count">4题</div>
+                    </div>
+                    <div class="trend-item">
+                        <div class="trend-day">周三</div>
+                        <div class="trend-bar" style="height: 40%"></div>
+                        <div class="trend-count">2题</div>
+                    </div>
+                    <div class="trend-item">
+                        <div class="trend-day">周四</div>
+                        <div class="trend-bar" style="height: 100%"></div>
+                        <div class="trend-count">5题</div>
+                    </div>
+                    <div class="trend-item">
+                        <div class="trend-day">周五</div>
+                        <div class="trend-bar" style="height: 70%"></div>
+                        <div class="trend-count">3题</div>
+                    </div>
+                    <div class="trend-item">
+                        <div class="trend-day">周六</div>
+                        <div class="trend-bar" style="height: 90%"></div>
+                        <div class="trend-count">4题</div>
+                    </div>
+                    <div class="trend-item">
+                        <div class="trend-day">周日</div>
+                        <div class="trend-bar" style="height: 50%"></div>
+                        <div class="trend-count">2题</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 遮罩层 -->
+    <div class="overlay" id="overlay"></div>
+
+    <script src="mobile.js"></script>
+</body>
+</html>

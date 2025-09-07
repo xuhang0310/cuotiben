@@ -1,0 +1,113 @@
+            <!-- 右侧浮层面板 -->
+            <aside class="right-panel">
+                <div class="panel-header">
+                    <h3>错题详情</h3>
+                    <button class="close-btn">×</button>
+                </div>
+                <div class="panel-content">
+                    <div class="question-image-container">
+                        <img src="https://placehold.co/400x300?text=错题详情" alt="错题详情" class="detail-image">
+                    </div>
+                    
+                    <!-- 艾宾浩斯进度条 -->
+                    <div class="ebbinghaus-progress">
+                        <h4>艾宾浩斯复习进度</h4>
+                        <div class="progress-steps">
+                            <div class="step completed" title="第1次复习"></div>
+                            <div class="step current" title="第2次复习"></div>
+                            <div class="step pending" title="第3次复习"></div>
+                            <div class="step pending" title="第4次复习"></div>
+                            <div class="step pending" title="第5次复习"></div>
+                        </div>
+                        <div class="next-review">
+                            <span>下次复习：</span>
+                            <span class="date">2023-05-20</span>
+                        </div>
+                    </div>
+                    
+                    <div class="question-tags">
+                        <span class="tag">数学</span>
+                        <span class="tag">函数</span>
+                        <span class="tag">中等</span>
+                    </div>
+                    <div class="question-info">
+                        <div class="info-section">
+                            <h4>错因分析</h4>
+                            <p>对函数概念理解不清晰，没有掌握复合函数的求导法则。</p>
+                        </div>
+                        <div class="info-section">
+                            <h4>正确解法</h4>
+                            <p>首先识别复合函数结构，然后应用链式法则进行求导。</p>
+                        </div>
+                        <div class="info-section">
+                            <h4>详细解析</h4>
+                            <p>本题考查复合函数求导，需要先分析函数的复合结构，再应用相应的求导法则...</p>
+                        </div>
+                    </div>
+                    
+                    <!-- AI讲解区 -->
+                    <div class="ai-explanation-section">
+                        <h4>AI错题讲解</h4>
+                        <div class="ai-tabs">
+                            <button class="tab-btn active" data-tab="text">文字</button>
+                            <button class="tab-btn" data-tab="voice">语音</button>
+                            <button class="tab-btn" data-tab="diagram">图解</button>
+                        </div>
+                        <div class="tab-content">
+                            <div class="tab-pane active" id="text-pane">
+                                <div class="ai-text-content">
+                                    <p>这道题考查的是复合函数求导法则的应用。首先需要识别出函数的复合结构，然后按照链式法则逐步求导。</p>
+                                </div>
+                            </div>
+                            <div class="tab-pane" id="voice-pane">
+                                <div class="ai-voice-content">
+                                    <button class="play-btn">▶ 播放讲解</button>
+                                </div>
+                            </div>
+                            <div class="tab-pane" id="diagram-pane">
+                                <div class="ai-diagram-content">
+                                    <img src="https://placehold.co/300x200?text=解题思路图解" alt="解题思路图解">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 重复簇 -->
+                    <div class="duplicate-cluster-section">
+                        <h4>重复题簇</h4>
+                        <div class="similar-questions">
+                            <div class="similar-question">
+                                <img src="https://placehold.co/80x60?text=题005" alt="相似题">
+                                <span class="question-id">005</span>
+                            </div>
+                            <div class="similar-question">
+                                <img src="https://placehold.co/80x60?text=题012" alt="相似题">
+                                <span class="question-id">012</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mastery-rating">
+                        <h4>掌握度评分</h4>
+                        <div class="stars">
+                            <span class="star" data-rating="1">★</span>
+                            <span class="star" data-rating="2">★</span>
+                            <span class="star" data-rating="3">★</span>
+                            <span class="star" data-rating="4">★</span>
+                            <span class="star" data-rating="5">★</span>
+                        </div>
+                    </div>
+                    <div class="action-buttons">
+                        <button class="btn secondary">编辑</button>
+                        <button class="btn secondary">删除</button>
+                        <button class="btn secondary">加入簇</button>
+                        <button class="btn primary">分享</button>
+                    </div>
+                </div>
+            </aside>
+        </div>
+    </div>
+
+    <script src="../script.js"></script>
+</body>
+</html>

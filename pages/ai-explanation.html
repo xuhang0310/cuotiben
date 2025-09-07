@@ -1,0 +1,75 @@
+<!--#include file="../partials/header.html" -->
+
+            <!-- 中央内容区 -->
+            <main class="content-area">
+                <!-- AI讲解中心页面 -->
+                <div id="ai-explanation" class="page">
+                    <div class="ai-container">
+                        <div class="ai-header">
+                            <h2>AI错题讲解</h2>
+                            <div class="ai-status-indicator">
+                                <span class="status-completed">已完成</span>
+                            </div>
+                        </div>
+                        <div class="ai-content">
+                            <div class="ai-tabs">
+                                <button class="tab-btn active" data-tab="text">文字讲解</button>
+                                <button class="tab-btn" data-tab="voice">语音讲解</button>
+                                <button class="tab-btn" data-tab="diagram">图解</button>
+                            </div>
+                            <div class="tab-content">
+                                <div class="tab-pane active" id="text-tab">
+                                    <div class="ai-text-content">
+                                        <h3>解题思路分析</h3>
+                                        <p>这道题考查的是复合函数求导法则的应用。首先需要识别出函数的复合结构，然后按照链式法则逐步求导。</p>
+                                        <h3>详细步骤</h3>
+                                        <ol>
+                                            <li>识别外层函数和内层函数</li>
+                                            <li>分别求导外层和内层函数</li>
+                                            <li>应用链式法则相乘</li>
+                                            <li>化简得到最终结果</li>
+                                        </ol>
+                                    </div>
+                                </div>
+                                <div class="tab-pane" id="voice-tab">
+                                    <div class="ai-voice-content">
+                                        <div class="voice-player">
+                                            <button class="play-btn">▶ 播放</button>
+                                            <div class="progress-container">
+                                                <div class="progress-bar">
+                                                    <div class="progress-fill" style="width: 30%"></div>
+                                                </div>
+                                            </div>
+                                            <div class="speed-control">
+                                                <label>语速:</label>
+                                                <select>
+                                                    <option>0.5x</option>
+                                                    <option selected>1.0x</option>
+                                                    <option>1.5x</option>
+                                                    <option>2.0x</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="tab-pane" id="diagram-tab">
+                                    <div class="ai-diagram-content">
+                                        <div class="diagram-container">
+                                            <img src="https://placehold.co/600x400?text=思维导图/流程图" alt="解题思路图解">
+                                        </div>
+                                        <div class="diagram-actions">
+                                            <button class="btn secondary">放大</button>
+                                            <button class="btn secondary">导出PNG</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="ai-actions">
+                            <button class="btn secondary">重新生成</button>
+                            <button class="btn secondary">导出图片</button>
+                        </div>
+                    </div>
+                </div>
+                
+<!--#include file="../partials/footer.html" -->

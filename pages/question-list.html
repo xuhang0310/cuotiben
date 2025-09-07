@@ -1,0 +1,161 @@
+<!--#include file="../partials/header.html" -->
+
+            <!-- 中央内容区 -->
+            <main class="content-area">
+                <!-- 错题列表页面 -->
+                <div id="question-list" class="page active">
+                    <!-- 过滤器 -->
+                    <div class="filter-bar">
+                        <div class="filter-group">
+                            <select class="filter-select">
+                                <option>学科▼</option>
+                                <option>数学</option>
+                                <option>语文</option>
+                                <option>英语</option>
+                            </select>
+                            <select class="filter-select">
+                                <option>章节▼</option>
+                                <option>第一章</option>
+                                <option>第二章</option>
+                            </select>
+                            <select class="filter-select">
+                                <option>难度▼</option>
+                                <option>简单</option>
+                                <option>中等</option>
+                                <option>困难</option>
+                            </select>
+                            <select class="filter-select">
+                                <option>重复标注▼</option>
+                                <option>全部</option>
+                                <option>重复题</option>
+                                <option>独立题</option>
+                            </select>
+                            <select class="filter-select">
+                                <option>排序▼</option>
+                                <option>时间倒序</option>
+                                <option>时间正序</option>
+                                <option>掌握度</option>
+                                <option>艾宾浩斯到期</option>
+                            </select>
+                        </div>
+                        <button class="btn primary">新增错题+</button>
+                    </div>
+
+                    <!-- 错题卡片网格 -->
+                    <div class="question-grid">
+                        <!-- 单个错题卡片 -->
+                        <div class="question-card" data-id="1">
+                            <div class="card-badges">
+                                <span class="ebbinghaus-badge" title="艾宾浩斯复习状态">D-3</span>
+                                <span class="cluster-badge" title="重复题簇">🔗3</span>
+                            </div>
+                            <div class="card-header">
+                                <span class="question-id">题号: 001</span>
+                                <span class="update-time">2023-05-15</span>
+                            </div>
+                            <div class="card-image">
+                                <img src="https://placehold.co/300x200?text=错题图片" alt="错题图片">
+                            </div>
+                            <div class="card-tags">
+                                <span class="tag">数学</span>
+                                <span class="tag">函数</span>
+                                <span class="tag">中等</span>
+                            </div>
+                        </div>
+
+                        <div class="question-card" data-id="2">
+                            <div class="card-badges">
+                                <span class="ebbinghaus-badge" title="艾宾浩斯复习状态">D+1</span>
+                                <span class="cluster-badge" title="重复题簇">🔗1</span>
+                            </div>
+                            <div class="card-header">
+                                <span class="question-id">题号: 002</span>
+                                <span class="update-time">2023-05-16</span>
+                            </div>
+                            <div class="card-image">
+                                <img src="https://placehold.co/300x200?text=错题图片" alt="错题图片">
+                            </div>
+                            <div class="card-tags">
+                                <span class="tag">语文</span>
+                                <span class="tag">阅读理解</span>
+                                <span class="tag">困难</span>
+                            </div>
+                        </div>
+
+                        <div class="question-card" data-id="3">
+                            <div class="card-badges">
+                                <span class="ebbinghaus-badge" title="艾宾浩斯复习状态">D+5</span>
+                            </div>
+                            <div class="card-header">
+                                <span class="question-id">题号: 003</span>
+                                <span class="update-time">2023-05-17</span>
+                            </div>
+                            <div class="card-image">
+                                <img src="https://placehold.co/300x200?text=错题图片" alt="错题图片">
+                            </div>
+                            <div class="card-tags">
+                                <span class="tag">英语</span>
+                                <span class="tag">语法</span>
+                                <span class="tag">简单</span>
+                            </div>
+                        </div>
+
+                        <div class="question-card" data-id="4">
+                            <div class="card-badges">
+                                <span class="ebbinghaus-badge" title="艾宾浩斯复习状态">D-2</span>
+                                <span class="cluster-badge" title="重复题簇">🔗2</span>
+                            </div>
+                            <div class="card-header">
+                                <span class="question-id">题号: 004</span>
+                                <span class="update-time">2023-05-18</span>
+                            </div>
+                            <div class="card-image">
+                                <img src="https://placehold.co/300x200?text=错题图片" alt="错题图片">
+                            </div>
+                            <div class="card-tags">
+                                <span class="tag">数学</span>
+                                <span class="tag">几何</span>
+                                <span class="tag">中等</span>
+                            </div>
+                        </div>
+
+                        <div class="question-card" data-id="5">
+                            <div class="card-badges">
+                                <span class="ebbinghaus-badge" title="艾宾浩斯复习状态">D+3</span>
+                            </div>
+                            <div class="card-header">
+                                <span class="question-id">题号: 005</span>
+                                <span class="update-time">2023-05-19</span>
+                            </div>
+                            <div class="card-image">
+                                <img src="https://placehold.co/300x200?text=错题图片" alt="错题图片">
+                            </div>
+                            <div class="card-tags">
+                                <span class="tag">语文</span>
+                                <span class="tag">古诗词</span>
+                                <span class="tag">简单</span>
+                            </div>
+                        </div>
+
+                        <div class="question-card" data-id="6">
+                            <div class="card-badges">
+                                <span class="ebbinghaus-badge" title="艾宾浩斯复习状态">D-1</span>
+                                <span class="cluster-badge" title="重复题簇">🔗1</span>
+                            </div>
+                            <div class="card-header">
+                                <span class="question-id">题号: 006</span>
+                                <span class="update-time">2023-05-20</span>
+                            </div>
+                            <div class="card-image">
+                                <img src="https://placehold.co/300x200?text=错题图片" alt="错题图片">
+                            </div>
+                            <div class="card-tags">
+                                <span class="tag">英语</span>
+                                <span class="tag">词汇</span>
+                                <span class="tag">中等</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+<!--#include file="../partials/footer.html" -->
