@@ -5,7 +5,10 @@ import {
   BookOutlined,
   PlayCircleOutlined,
   BarChartOutlined,
-  SettingOutlined
+  SettingOutlined,
+  CameraOutlined,
+  RobotOutlined,
+  FileTextOutlined
 } from '@ant-design/icons-vue'
 
 const router = createRouter({
@@ -23,7 +26,28 @@ const router = createRouter({
       }
     },
     {
-      path: '/questions',
+      path: '/capture',
+      name: 'capture',
+      component: () => import('../views/CaptureView.vue'),
+      meta: { 
+        title: '拍照录题',
+        label: '拍照录题',
+        icon: CameraOutlined,
+        showInMenu: true
+      }
+    },
+    {
+      path: '/ai-explain',
+      name: 'ai-explain',
+      component: () => import('../views/AIExplainView.vue'),
+      meta: { 
+        title: 'AI讲解',
+        label: 'AI讲解',
+        icon: RobotOutlined,
+        showInMenu: true
+      }
+    },
+    {      path: '/questions',
       name: 'questions',
       component: () => import('../views/QuestionsView.vue'),
       meta: { 
@@ -31,6 +55,17 @@ const router = createRouter({
         label: '题目管理',
         icon: BookOutlined,
         showInMenu: true
+      }
+    },
+    {
+      path: '/questions/:id',
+      name: 'question-detail',
+      component: () => import('../views/QuestionDetailView.vue'),
+      meta: { 
+        title: '题目详情',
+        label: '题目详情',
+        icon: FileTextOutlined,
+        showInMenu: false
       }
     },
     {

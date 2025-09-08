@@ -1,6 +1,7 @@
 <script setup lang="ts">
-import { ref, computed, reactive } from 'vue'
+import { ref, computed, reactive, onMounted, watch, h } from 'vue'
 import { useQuestionStore, type Question } from '@/stores/question'
+import { useRouter, useRoute } from 'vue-router'
 import {
   PlusOutlined,
   EditOutlined,
@@ -8,18 +9,27 @@ import {
   HeartOutlined,
   HeartFilled,
   SearchOutlined,
-  FilterOutlined
+  FilterOutlined,
+  EyeOutlined
 } from '@ant-design/icons-vue'
 import { message } from 'ant-design-vue'
 
 const questionStore = useQuestionStore()
+const router = useRouter()
+const route = useRoute()
+
+// 高级筛选显示状态
+const showAdvancedFilter = ref(false)
 
 // 搜索和筛选
 const searchForm = reactive({
   keyword: '',
   subject: '',
   difficulty: '',
-  isFavorite: false
+  isFavorite: false,
+  tags: [] as string[],
+  dateRange: [] as [string, string] | [],
+  practiceStatus: '' // 'all', 'practiced', 'not_practiced'
 })
 
 // 分页配置
@@ -39,7 +49,17 @@ const columns = [
     dataIndex: 'title',
     key: 'title',
     ellipsis: true,
-    width: 200
+    width: 200,
+    customRender: ({ text, record }: { text: string, record: Question }) => {
+      return h(
+        'a',
+        {
+          onClick: () => viewQuestionDetail(record.id),
+          style: { cursor: 'pointer' }
+        },
+        text
+      )
+    }
   },
   {
     title: '科目',
@@ -65,6 +85,11 @@ const columns = [
     width: 100
   },
   {
+    title: '标签',
+    key: 'tags',
+    width: 150
+  },
+  {
     title: '创建时间',
     dataIndex: 'createdAt',
     key: 'createdAt',
@@ -73,7 +98,7 @@ const columns = [
   {
     title: '操作',
     key: 'action',
-    width: 150,
+    width: 180,
     fixed: 'right'
   }
 ]
@@ -86,7 +111,8 @@ const filteredQuestions = computed(() => {
   if (searchForm.keyword) {
     questions = questions.filter(q => 
       q.title.toLowerCase().includes(searchForm.keyword.toLowerCase()) ||
-      q.content.toLowerCase().includes(searchForm.keyword.toLowerCase())
+      q.content.toLowerCase().includes(searchForm.keyword.toLowerCase()) ||
+      q.explanation?.toLowerCase().includes(searchForm.keyword.toLowerCase())
     )
   }
   
@@ -105,6 +131,34 @@ const filteredQuestions = computed(() => {
     questions = questions.filter(q => q.isFavorite)
   }
   
+  // 标签筛选
+  if (searchForm.tags.length > 0) {
+    questions = questions.filter(q => 
+      searchForm.tags.some(tag => q.tags.includes(tag))
+    )
+  }
+  
+  // 日期范围筛选
+  if (searchForm.dateRange.length === 2) {
+    const startDate = new Date(searchForm.dateRange[0])
+    const endDate = new Date(searchForm.dateRange[1])
+    endDate.setHours(23, 59, 59, 999) // 设置为当天结束时间
+    
+    questions = questions.filter(q => {
+      const createdAt = new Date(q.createdAt)
+      return createdAt >= startDate && createdAt <= endDate
+    })
+  }
+  
+  // 练习状态筛选
+  if (searchForm.practiceStatus) {
+    if (searchForm.practiceStatus === 'practiced') {
+      questions = questions.filter(q => q.practiceCount > 0)
+    } else if (searchForm.practiceStatus === 'not_practiced') {
+      questions = questions.filter(q => q.practiceCount === 0)
+    }
+  }
+  
   return questions
 })
 
@@ -112,14 +166,31 @@ const filteredQuestions = computed(() => {
 const paginatedQuestions = computed(() => {
   const start = (pagination.current - 1) * pagination.pageSize
   const end = start + pagination.pageSize
-  pagination.total = filteredQuestions.value.length
   return filteredQuestions.value.slice(start, end)
 })
+
+// 监听筛选结果变化，更新分页总数
+watch(filteredQuestions, (newQuestions: Question[]) => {
+  pagination.total = newQuestions.length
+  // 如果当前页超出范围，重置到第一页
+  if (pagination.current > Math.ceil(newQuestions.length / pagination.pageSize)) {
+    pagination.current = 1
+  }
+}, { immediate: true })
 
 // 科目选项
 const subjectOptions = computed(() => {
   const subjects = Array.from(new Set(questionStore.questions.map(q => q.subject)))
   return subjects.map(subject => ({ label: subject, value: subject }))
+})
+
+// 所有标签
+const allTags = computed(() => {
+  const tagsSet = new Set<string>()
+  questionStore.questions.forEach(q => {
+    q.tags.forEach(tag => tagsSet.add(tag))
+  })
+  return Array.from(tagsSet)
 })
 
 // 难度选项
@@ -160,7 +231,10 @@ const resetSearch = () => {
     keyword: '',
     subject: '',
     difficulty: '',
-    isFavorite: false
+    isFavorite: false,
+    tags: [],
+    dateRange: [],
+    practiceStatus: ''
   })
   pagination.current = 1
 }
@@ -274,6 +348,27 @@ const getAccuracy = (question: Question) => {
 const formatDate = (date: Date) => {
   return new Date(date).toLocaleDateString('zh-CN')
 }
+
+// 查看题目详情
+const viewQuestionDetail = (id: string) => {
+  router.push(`/questions/${id}`)
+}
+
+// 检查URL参数，处理编辑请求
+const checkRouteQuery = () => {
+  const editId = route.query.edit as string
+  if (editId) {
+    const question = questionStore.getQuestionById(editId)
+    if (question) {
+      openModal(question)
+    }
+  }
+}
+
+// 生命周期钩子
+onMounted(() => {
+  checkRouteQuery()
+})
 </script>
 
 <template>
@@ -334,11 +429,69 @@ const formatDate = (date: Date) => {
         </a-form-item>
         
         <a-form-item>
+          <a-button type="primary" @click="() => showAdvancedFilter = !showAdvancedFilter">
+            <template #icon><FilterOutlined /></template>
+            高级筛选
+          </a-button>
+        </a-form-item>
+        
+        <a-form-item>
           <a-button @click="resetSearch">
             重置
           </a-button>
         </a-form-item>
       </a-form>
+      
+      <!-- 高级筛选选项 -->
+      <div v-if="showAdvancedFilter" class="advanced-filter">
+        <a-divider style="margin: 12px 0" />
+        <a-row :gutter="16">
+          <a-col :xs="24" :sm="12" :md="8">
+            <a-form-item label="标签筛选">
+              <a-select
+                v-model:value="searchForm.tags"
+                mode="multiple"
+                placeholder="选择标签"
+                style="width: 100%"
+                allow-clear
+              >
+                <a-select-option
+                  v-for="tag in allTags"
+                  :key="tag"
+                  :value="tag"
+                >
+                  {{ tag }}
+                </a-select-option>
+              </a-select>
+            </a-form-item>
+          </a-col>
+          
+          <a-col :xs="24" :sm="12" :md="8">
+            <a-form-item label="创建日期">
+              <a-range-picker
+                v-model:value="searchForm.dateRange"
+                style="width: 100%"
+                format="YYYY-MM-DD"
+              />
+            </a-form-item>
+          </a-col>
+          
+          <a-col :xs="24" :sm="12" :md="8">
+            <a-form-item label="练习状态">
+              <a-select
+                v-model:value="searchForm.practiceStatus"
+                placeholder="选择练习状态"
+                style="width: 100%"
+                allow-clear
+              >
+                <a-select-option value="all">全部</a-select-option>
+                <a-select-option value="practiced">已练习</a-select-option>
+                <a-select-option value="not_practiced">未练习</a-select-option>
+              </a-select>
+            </a-form-item>
+          </a-col>
+        </a-row>
+      </div>
     </a-card>
 
     <!-- 操作栏 -->
@@ -374,6 +527,14 @@ const formatDate = (date: Date) => {
             {{ getAccuracy(record) }}
           </template>
           
+          <template v-else-if="column.key === 'tags'">
+            <a-space wrap>
+              <a-tag v-for="tag in record.tags" :key="tag" color="cyan" size="small">
+                {{ tag }}
+              </a-tag>
+            </a-space>
+          </template>
+          
           <template v-else-if="column.key === 'createdAt'">
             {{ formatDate(record.createdAt) }}
           </template>
@@ -387,6 +548,14 @@ const formatDate = (date: Date) => {
               >
                 <HeartFilled v-if="record.isFavorite" style="color: #ff4d4f;" />
                 <HeartOutlined v-else />
+              </a-button>
+              
+              <a-button
+                type="text"
+                size="small"
+                @click="viewQuestionDetail(record.id)"
+              >
+                <EyeOutlined />
               </a-button>
               
               <a-button
@@ -529,6 +698,10 @@ const formatDate = (date: Date) => {
 .search-card {
   margin-bottom: 16px;
   border-radius: 8px;
+}
+
+.advanced-filter {
+  margin-top: 8px;
 }
 
 .toolbar {

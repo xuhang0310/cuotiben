@@ -73,34 +73,38 @@ const navigateTo = (path: string) => {
 }
 
 .app-header {
-  background: #fff;
+  background: var(--background-color);
   padding: 0 24px;
   display: flex;
   align-items: center;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
-  border-bottom: 1px solid #f0f0f0;
+  box-shadow: var(--box-shadow-small);
+  border-bottom: 1px solid var(--color-border);
   position: sticky;
   top: 0;
   z-index: 100;
   height: 64px;
+  transition: background-color var(--transition-base), box-shadow var(--transition-base);
 }
 
 .logo {
   display: flex;
   align-items: center;
   margin-right: 40px;
-  color: #1890ff;
-  font-size: 18px;
+  color: var(--primary-color);
+  font-size: var(--font-size-medium);
   font-weight: bold;
+  transition: margin var(--transition-base);
 }
 
 .logo-icon {
   font-size: 24px;
   margin-right: 8px;
+  transition: margin var(--transition-base);
 }
 
 .logo-text {
   white-space: nowrap;
+  transition: color var(--transition-base), font-size var(--transition-base);
 }
 
 .app-menu {
@@ -114,25 +118,25 @@ const navigateTo = (path: string) => {
   align-items: center;
   margin: 0 4px;
   padding: 0 16px;
-  border-radius: 8px;
-  transition: all 0.3s ease;
+  border-radius: var(--border-radius-small);
+  transition: all var(--transition-base);
   font-weight: 500;
   height: 40px;
 }
 
 .app-menu .ant-menu-item:hover {
-  background: #f0f2f5;
-  color: #1890ff;
+  background: rgba(91, 143, 249, 0.1);
+  color: var(--primary-color);
 }
 
 .app-menu .ant-menu-item-selected {
-  background: #e6f7ff;
-  color: #1890ff;
+  background: var(--primary-color-light);
+  color: var(--primary-color);
   font-weight: 600;
 }
 
 .app-menu .ant-menu-item-selected::after {
-  border-bottom: 2px solid #1890ff;
+  border-bottom: 2px solid var(--primary-color);
 }
 
 .app-menu .ant-menu-item span {
@@ -142,21 +146,33 @@ const navigateTo = (path: string) => {
 .header-actions {
   display: flex;
   align-items: center;
+  gap: var(--spacing-small);
 }
 
 .app-content {
   min-height: calc(100vh - 64px);
-  background: #f0f2f5;
+  background: var(--background-color-light);
   overflow-x: hidden;
+  transition: background-color var(--transition-base);
 }
 
 .content-wrapper {
-  padding: 0;
+  padding: 0 5%;
   min-height: 100%;
-  width: 100%;
+  width: 90%;
+  margin: 0 auto;
+  max-width: 1600px;
+  transition: padding var(--transition-base), width var(--transition-base);
 }
 
 /* 响应式设计 */
+@media (max-width: 1440px) {
+  .content-wrapper {
+    width: 90%;
+    padding: 0 5%;
+  }
+}
+
 @media (max-width: 768px) {
   .app-header {
     padding: 0 16px;
@@ -173,6 +189,11 @@ const navigateTo = (path: string) => {
   
   .app-menu .ant-menu-item span {
     display: none;
+  }
+  
+  .content-wrapper {
+    width: 94%;
+    padding: 0 3%;
   }
 }
 
@@ -192,6 +213,11 @@ const navigateTo = (path: string) => {
   .app-menu .ant-menu-item {
     margin: 0 2px;
     padding: 0 8px;
+  }
+  
+  .content-wrapper {
+    width: 96%;
+    padding: 0 2%;
   }
 }
 </style>
