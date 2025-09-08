@@ -540,7 +540,7 @@ watch(practiceState, (newState) => {
 
 <style scoped>
 .practice-container {
-  margin: 0 auto;
+  margin: 5px auto;
 }
 
 .config-card {
