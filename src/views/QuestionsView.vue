@@ -1,0 +1,634 @@
+<script setup lang="ts">
+import { ref, computed, reactive } from 'vue'
+import { useQuestionStore, type Question } from '@/stores/question'
+import {
+  PlusOutlined,
+  EditOutlined,
+  DeleteOutlined,
+  HeartOutlined,
+  HeartFilled,
+  SearchOutlined,
+  FilterOutlined
+} from '@ant-design/icons-vue'
+import { message } from 'ant-design-vue'
+
+const questionStore = useQuestionStore()
+
+// 搜索和筛选
+const searchForm = reactive({
+  keyword: '',
+  subject: '',
+  difficulty: '',
+  isFavorite: false
+})
+
+// 分页配置
+const pagination = reactive({
+  current: 1,
+  pageSize: 10,
+  total: 0,
+  showSizeChanger: true,
+  showQuickJumper: true,
+  showTotal: (total: number, range: number[]) => `第 ${range[0]}-${range[1]} 条，共 ${total} 条`
+})
+
+// 表格列配置
+const columns = [
+  {
+    title: '题目标题',
+    dataIndex: 'title',
+    key: 'title',
+    ellipsis: true,
+    width: 200
+  },
+  {
+    title: '科目',
+    dataIndex: 'subject',
+    key: 'subject',
+    width: 100
+  },
+  {
+    title: '难度',
+    dataIndex: 'difficulty',
+    key: 'difficulty',
+    width: 80
+  },
+  {
+    title: '练习次数',
+    dataIndex: 'practiceCount',
+    key: 'practiceCount',
+    width: 100
+  },
+  {
+    title: '正确率',
+    key: 'accuracy',
+    width: 100
+  },
+  {
+    title: '创建时间',
+    dataIndex: 'createdAt',
+    key: 'createdAt',
+    width: 120
+  },
+  {
+    title: '操作',
+    key: 'action',
+    width: 150,
+    fixed: 'right'
+  }
+]
+
+// 筛选后的题目列表
+const filteredQuestions = computed(() => {
+  let questions = questionStore.questions
+  
+  // 关键词搜索
+  if (searchForm.keyword) {
+    questions = questions.filter(q => 
+      q.title.toLowerCase().includes(searchForm.keyword.toLowerCase()) ||
+      q.content.toLowerCase().includes(searchForm.keyword.toLowerCase())
+    )
+  }
+  
+  // 科目筛选
+  if (searchForm.subject) {
+    questions = questions.filter(q => q.subject === searchForm.subject)
+  }
+  
+  // 难度筛选
+  if (searchForm.difficulty) {
+    questions = questions.filter(q => q.difficulty === searchForm.difficulty)
+  }
+  
+  // 收藏筛选
+  if (searchForm.isFavorite) {
+    questions = questions.filter(q => q.isFavorite)
+  }
+  
+  return questions
+})
+
+// 分页后的题目列表
+const paginatedQuestions = computed(() => {
+  const start = (pagination.current - 1) * pagination.pageSize
+  const end = start + pagination.pageSize
+  pagination.total = filteredQuestions.value.length
+  return filteredQuestions.value.slice(start, end)
+})
+
+// 科目选项
+const subjectOptions = computed(() => {
+  const subjects = Array.from(new Set(questionStore.questions.map(q => q.subject)))
+  return subjects.map(subject => ({ label: subject, value: subject }))
+})
+
+// 难度选项
+const difficultyOptions = [
+  { label: '简单', value: 'easy' },
+  { label: '中等', value: 'medium' },
+  { label: '困难', value: 'hard' }
+]
+
+// 弹窗状态
+const modalVisible = ref(false)
+const editingQuestion = ref<Question | null>(null)
+const isEditing = computed(() => !!editingQuestion.value)
+
+// 表单数据
+const formData = reactive({
+  title: '',
+  content: '',
+  options: ['', '', '', ''],
+  correctAnswer: '',
+  explanation: '',
+  difficulty: 'medium' as 'easy' | 'medium' | 'hard',
+  subject: '',
+  tags: [] as string[]
+})
+
+// 表单验证规则
+const formRules = {
+  title: [{ required: true, message: '请输入题目标题', trigger: 'blur' }],
+  content: [{ required: true, message: '请输入题目内容', trigger: 'blur' }],
+  correctAnswer: [{ required: true, message: '请输入正确答案', trigger: 'blur' }],
+  subject: [{ required: true, message: '请选择科目', trigger: 'change' }]
+}
+
+// 重置搜索
+const resetSearch = () => {
+  Object.assign(searchForm, {
+    keyword: '',
+    subject: '',
+    difficulty: '',
+    isFavorite: false
+  })
+  pagination.current = 1
+}
+
+// 打开添加/编辑弹窗
+const openModal = (question?: Question) => {
+  if (question) {
+    editingQuestion.value = question
+    Object.assign(formData, {
+      title: question.title,
+      content: question.content,
+      options: question.options || ['', '', '', ''],
+      correctAnswer: question.correctAnswer,
+      explanation: question.explanation || '',
+      difficulty: question.difficulty,
+      subject: question.subject,
+      tags: [...question.tags]
+    })
+  } else {
+    editingQuestion.value = null
+    Object.assign(formData, {
+      title: '',
+      content: '',
+      options: ['', '', '', ''],
+      correctAnswer: '',
+      explanation: '',
+      difficulty: 'medium',
+      subject: '',
+      tags: []
+    })
+  }
+  modalVisible.value = true
+}
+
+// 关闭弹窗
+const closeModal = () => {
+  modalVisible.value = false
+  editingQuestion.value = null
+}
+
+// 保存题目
+const saveQuestion = () => {
+  if (isEditing.value && editingQuestion.value) {
+    questionStore.updateQuestion(editingQuestion.value.id, {
+      title: formData.title,
+      content: formData.content,
+      options: formData.options.filter(opt => opt.trim()),
+      correctAnswer: formData.correctAnswer,
+      explanation: formData.explanation,
+      difficulty: formData.difficulty,
+      subject: formData.subject,
+      tags: formData.tags
+    })
+    message.success('题目更新成功')
+  } else {
+    questionStore.addQuestion({
+      title: formData.title,
+      content: formData.content,
+      options: formData.options.filter(opt => opt.trim()),
+      correctAnswer: formData.correctAnswer,
+      explanation: formData.explanation,
+      difficulty: formData.difficulty,
+      subject: formData.subject,
+      tags: formData.tags,
+      isFavorite: false
+    })
+    message.success('题目添加成功')
+  }
+  closeModal()
+}
+
+// 删除题目
+const deleteQuestion = (id: string) => {
+  questionStore.deleteQuestion(id)
+  message.success('题目删除成功')
+}
+
+// 切换收藏状态
+const toggleFavorite = (id: string) => {
+  const isFavorite = questionStore.toggleFavorite(id)
+  message.success(isFavorite ? '已添加到收藏' : '已取消收藏')
+}
+
+// 获取难度标签颜色
+const getDifficultyColor = (difficulty: string) => {
+  const colors = {
+    easy: 'green',
+    medium: 'orange',
+    hard: 'red'
+  }
+  return colors[difficulty as keyof typeof colors] || 'default'
+}
+
+// 获取难度标签文本
+const getDifficultyText = (difficulty: string) => {
+  const texts = {
+    easy: '简单',
+    medium: '中等',
+    hard: '困难'
+  }
+  return texts[difficulty as keyof typeof texts] || difficulty
+}
+
+// 计算正确率
+const getAccuracy = (question: Question) => {
+  if (question.practiceCount === 0) return '-'
+  return `${((question.correctCount / question.practiceCount) * 100).toFixed(1)}%`
+}
+
+// 格式化日期
+const formatDate = (date: Date) => {
+  return new Date(date).toLocaleDateString('zh-CN')
+}
+</script>
+
+<template>
+  <div class="questions-container">
+    <!-- 搜索和筛选区域 -->
+    <a-card class="search-card" :bordered="false">
+      <a-form layout="inline" :model="searchForm">
+        <a-form-item>
+          <a-input
+            v-model:value="searchForm.keyword"
+            placeholder="搜索题目标题或内容"
+            style="width: 250px;"
+          >
+            <template #prefix>
+              <SearchOutlined />
+            </template>
+          </a-input>
+        </a-form-item>
+        
+        <a-form-item>
+          <a-select
+            v-model:value="searchForm.subject"
+            placeholder="选择科目"
+            style="width: 120px;"
+            allow-clear
+          >
+            <a-select-option
+              v-for="option in subjectOptions"
+              :key="option.value"
+              :value="option.value"
+            >
+              {{ option.label }}
+            </a-select-option>
+          </a-select>
+        </a-form-item>
+        
+        <a-form-item>
+          <a-select
+            v-model:value="searchForm.difficulty"
+            placeholder="选择难度"
+            style="width: 100px;"
+            allow-clear
+          >
+            <a-select-option
+              v-for="option in difficultyOptions"
+              :key="option.value"
+              :value="option.value"
+            >
+              {{ option.label }}
+            </a-select-option>
+          </a-select>
+        </a-form-item>
+        
+        <a-form-item>
+          <a-checkbox v-model:checked="searchForm.isFavorite">
+            只看收藏
+          </a-checkbox>
+        </a-form-item>
+        
+        <a-form-item>
+          <a-button @click="resetSearch">
+            重置
+          </a-button>
+        </a-form-item>
+      </a-form>
+    </a-card>
+
+    <!-- 操作栏 -->
+    <div class="toolbar">
+      <div class="toolbar-left">
+        <span class="total-count">共 {{ filteredQuestions.length }} 道题目</span>
+      </div>
+      <div class="toolbar-right">
+        <a-button type="primary" @click="openModal()">
+          <PlusOutlined />
+          添加题目
+        </a-button>
+      </div>
+    </div>
+
+    <!-- 题目列表 -->
+    <a-card :bordered="false">
+      <a-table
+        :columns="columns"
+        :data-source="paginatedQuestions"
+        :pagination="pagination"
+        :scroll="{ x: 800 }"
+        row-key="id"
+      >
+        <template #bodyCell="{ column, record }">
+          <template v-if="column.key === 'difficulty'">
+            <a-tag :color="getDifficultyColor(record.difficulty)">
+              {{ getDifficultyText(record.difficulty) }}
+            </a-tag>
+          </template>
+          
+          <template v-else-if="column.key === 'accuracy'">
+            {{ getAccuracy(record) }}
+          </template>
+          
+          <template v-else-if="column.key === 'createdAt'">
+            {{ formatDate(record.createdAt) }}
+          </template>
+          
+          <template v-else-if="column.key === 'action'">
+            <a-space>
+              <a-button
+                type="text"
+                size="small"
+                @click="toggleFavorite(record.id)"
+              >
+                <HeartFilled v-if="record.isFavorite" style="color: #ff4d4f;" />
+                <HeartOutlined v-else />
+              </a-button>
+              
+              <a-button
+                type="text"
+                size="small"
+                @click="openModal(record)"
+              >
+                <EditOutlined />
+              </a-button>
+              
+              <a-popconfirm
+                title="确定要删除这道题目吗？"
+                @confirm="deleteQuestion(record.id)"
+              >
+                <a-button type="text" size="small" danger>
+                  <DeleteOutlined />
+                </a-button>
+              </a-popconfirm>
+            </a-space>
+          </template>
+        </template>
+      </a-table>
+    </a-card>
+
+    <!-- 添加/编辑题目弹窗 -->
+    <a-modal
+      v-model:open="modalVisible"
+      :title="isEditing ? '编辑题目' : '添加题目'"
+      width="800px"
+      @ok="saveQuestion"
+      @cancel="closeModal"
+    >
+      <a-form
+        :model="formData"
+        :rules="formRules"
+        layout="vertical"
+      >
+        <a-row :gutter="16">
+          <a-col :span="24">
+            <a-form-item label="题目标题" name="title">
+              <a-input v-model:value="formData.title" placeholder="请输入题目标题" />
+            </a-form-item>
+          </a-col>
+        </a-row>
+        
+        <a-row :gutter="16">
+          <a-col :span="24">
+            <a-form-item label="题目内容" name="content">
+              <a-textarea
+                v-model:value="formData.content"
+                placeholder="请输入题目内容"
+                :rows="4"
+              />
+            </a-form-item>
+          </a-col>
+        </a-row>
+        
+        <a-row :gutter="16">
+          <a-col :span="24">
+            <a-form-item label="选项（选择题）">
+              <div class="options-container">
+                <div
+                  v-for="(option, index) in formData.options"
+                  :key="index"
+                  class="option-item"
+                >
+                  <span class="option-label">{{ String.fromCharCode(65 + index) }}.</span>
+                  <a-input
+                    v-model:value="formData.options[index]"
+                    :placeholder="`选项 ${String.fromCharCode(65 + index)}`"
+                  />
+                </div>
+              </div>
+            </a-form-item>
+          </a-col>
+        </a-row>
+        
+        <a-row :gutter="16">
+          <a-col :span="12">
+            <a-form-item label="正确答案" name="correctAnswer">
+              <a-input v-model:value="formData.correctAnswer" placeholder="请输入正确答案" />
+            </a-form-item>
+          </a-col>
+          
+          <a-col :span="6">
+            <a-form-item label="难度" name="difficulty">
+              <a-select v-model:value="formData.difficulty">
+                <a-select-option
+                  v-for="option in difficultyOptions"
+                  :key="option.value"
+                  :value="option.value"
+                >
+                  {{ option.label }}
+                </a-select-option>
+              </a-select>
+            </a-form-item>
+          </a-col>
+          
+          <a-col :span="6">
+            <a-form-item label="科目" name="subject">
+              <a-input v-model:value="formData.subject" placeholder="请输入科目" />
+            </a-form-item>
+          </a-col>
+        </a-row>
+        
+        <a-row :gutter="16">
+          <a-col :span="24">
+            <a-form-item label="解析">
+              <a-textarea
+                v-model:value="formData.explanation"
+                placeholder="请输入题目解析（可选）"
+                :rows="3"
+              />
+            </a-form-item>
+          </a-col>
+        </a-row>
+        
+        <a-row :gutter="16">
+          <a-col :span="24">
+            <a-form-item label="标签">
+              <a-select
+                v-model:value="formData.tags"
+                mode="tags"
+                placeholder="请输入标签"
+                style="width: 100%;"
+              />
+            </a-form-item>
+          </a-col>
+        </a-row>
+      </a-form>
+    </a-modal>
+  </div>
+</template>
+
+<style scoped>
+.questions-container {
+  margin: 0 auto;
+}
+
+.search-card {
+  margin-bottom: 16px;
+  border-radius: 8px;
+}
+
+.toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+  padding: 16px 0;
+}
+
+.total-count {
+  color: #666;
+  font-size: 14px;
+}
+
+.options-container {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.option-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.option-label {
+  min-width: 24px;
+  font-weight: 500;
+  color: #666;
+}
+
+/* 响应式设计 */
+@media (max-width: 1024px) {
+  .questions-container {
+    max-width: 100%;
+    padding: 0 16px;
+  }
+}
+
+@media (max-width: 768px) {
+  .questions-container {
+    padding: 0 12px;
+  }
+  
+  .search-card {
+    margin-bottom: 12px;
+  }
+  
+  .search-card .ant-form {
+    flex-direction: column;
+    gap: 12px;
+  }
+  
+  .search-card .ant-form-item {
+    margin-bottom: 0;
+  }
+  
+  .toolbar {
+    flex-direction: column;
+    gap: 12px;
+    align-items: stretch;
+    padding: 12px 0;
+  }
+  
+  .toolbar-left,
+  .toolbar-right {
+    text-align: center;
+  }
+  
+  /* 表格在移动端的优化 */
+  .ant-table {
+    font-size: 12px;
+  }
+  
+  .ant-table-thead > tr > th,
+  .ant-table-tbody > tr > td {
+    padding: 8px 4px;
+  }
+}
+
+@media (max-width: 480px) {
+  .questions-container {
+    padding: 0 8px;
+  }
+  
+  .search-card .ant-input,
+  .search-card .ant-select {
+    width: 100% !important;
+  }
+  
+  /* 在小屏幕上隐藏部分列 */
+  .ant-table-thead > tr > th:nth-child(3),
+  .ant-table-tbody > tr > td:nth-child(3),
+  .ant-table-thead > tr > th:nth-child(4),
+  .ant-table-tbody > tr > td:nth-child(4),
+  .ant-table-thead > tr > th:nth-child(6),
+  .ant-table-tbody > tr > td:nth-child(6) {
+    display: none;
+  }
+}
+</style>
