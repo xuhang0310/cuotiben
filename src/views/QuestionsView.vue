@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, computed, reactive, onMounted, watch, h } from 'vue'
-import { useQuestionStore, type Question } from '@/stores/question'
 import { useRouter, useRoute } from 'vue-router'
+import { fetchQuestions, addQuestion, updateQuestion, deleteQuestion as deleteMockQuestion, type Question } from '@/mock/questions'
 import {
   PlusOutlined,
   EditOutlined,
@@ -14,9 +14,11 @@ import {
 } from '@ant-design/icons-vue'
 import { message } from 'ant-design-vue'
 
-const questionStore = useQuestionStore()
 const router = useRouter()
 const route = useRoute()
+
+// 题目数据
+const questions = ref<Question[]>([])
 
 // 高级筛选显示状态
 const showAdvancedFilter = ref(false)
@@ -105,11 +107,11 @@ const columns = [
 
 // 筛选后的题目列表
 const filteredQuestions = computed(() => {
-  let questions = questionStore.questions
+  let questionsData = questions.value
   
   // 关键词搜索
   if (searchForm.keyword) {
-    questions = questions.filter(q => 
+    questionsData = questionsData.filter(q => 
       q.title.toLowerCase().includes(searchForm.keyword.toLowerCase()) ||
       q.content.toLowerCase().includes(searchForm.keyword.toLowerCase()) ||
       q.explanation?.toLowerCase().includes(searchForm.keyword.toLowerCase())
@@ -118,22 +120,22 @@ const filteredQuestions = computed(() => {
   
   // 科目筛选
   if (searchForm.subject) {
-    questions = questions.filter(q => q.subject === searchForm.subject)
+    questionsData = questionsData.filter(q => q.subject === searchForm.subject)
   }
   
   // 难度筛选
   if (searchForm.difficulty) {
-    questions = questions.filter(q => q.difficulty === searchForm.difficulty)
+    questionsData = questionsData.filter(q => q.difficulty === searchForm.difficulty)
   }
   
   // 收藏筛选
   if (searchForm.isFavorite) {
-    questions = questions.filter(q => q.isFavorite)
+    questionsData = questionsData.filter(q => q.isFavorite)
   }
   
   // 标签筛选
   if (searchForm.tags.length > 0) {
-    questions = questions.filter(q => 
+    questionsData = questionsData.filter(q => 
       searchForm.tags.some(tag => q.tags.includes(tag))
     )
   }
@@ -144,7 +146,7 @@ const filteredQuestions = computed(() => {
     const endDate = new Date(searchForm.dateRange[1])
     endDate.setHours(23, 59, 59, 999) // 设置为当天结束时间
     
-    questions = questions.filter(q => {
+    questionsData = questionsData.filter(q => {
       const createdAt = new Date(q.createdAt)
       return createdAt >= startDate && createdAt <= endDate
     })
@@ -153,13 +155,13 @@ const filteredQuestions = computed(() => {
   // 练习状态筛选
   if (searchForm.practiceStatus) {
     if (searchForm.practiceStatus === 'practiced') {
-      questions = questions.filter(q => q.practiceCount > 0)
+      questionsData = questionsData.filter(q => q.practiceCount > 0)
     } else if (searchForm.practiceStatus === 'not_practiced') {
-      questions = questions.filter(q => q.practiceCount === 0)
+      questionsData = questionsData.filter(q => q.practiceCount === 0)
     }
   }
   
-  return questions
+  return questionsData
 })
 
 // 分页后的题目列表
@@ -180,14 +182,14 @@ watch(filteredQuestions, (newQuestions: Question[]) => {
 
 // 科目选项
 const subjectOptions = computed(() => {
-  const subjects = Array.from(new Set(questionStore.questions.map(q => q.subject)))
+  const subjects = Array.from(new Set(questions.value.map(q => q.subject)))
   return subjects.map(subject => ({ label: subject, value: subject }))
 })
 
 // 所有标签
 const allTags = computed(() => {
   const tagsSet = new Set<string>()
-  questionStore.questions.forEach(q => {
+  questions.value.forEach(q => {
     q.tags.forEach(tag => tagsSet.add(tag))
   })
   return Array.from(tagsSet)
@@ -275,49 +277,6 @@ const closeModal = () => {
   editingQuestion.value = null
 }
 
-// 保存题目
-const saveQuestion = () => {
-  if (isEditing.value && editingQuestion.value) {
-    questionStore.updateQuestion(editingQuestion.value.id, {
-      title: formData.title,
-      content: formData.content,
-      options: formData.options.filter(opt => opt.trim()),
-      correctAnswer: formData.correctAnswer,
-      explanation: formData.explanation,
-      difficulty: formData.difficulty,
-      subject: formData.subject,
-      tags: formData.tags
-    })
-    message.success('题目更新成功')
-  } else {
-    questionStore.addQuestion({
-      title: formData.title,
-      content: formData.content,
-      options: formData.options.filter(opt => opt.trim()),
-      correctAnswer: formData.correctAnswer,
-      explanation: formData.explanation,
-      difficulty: formData.difficulty,
-      subject: formData.subject,
-      tags: formData.tags,
-      isFavorite: false
-    })
-    message.success('题目添加成功')
-  }
-  closeModal()
-}
-
-// 删除题目
-const deleteQuestion = (id: string) => {
-  questionStore.deleteQuestion(id)
-  message.success('题目删除成功')
-}
-
-// 切换收藏状态
-const toggleFavorite = (id: string) => {
-  const isFavorite = questionStore.toggleFavorite(id)
-  message.success(isFavorite ? '已添加到收藏' : '已取消收藏')
-}
-
 // 获取难度标签颜色
 const getDifficultyColor = (difficulty: string) => {
   const colors = {
@@ -349,6 +308,91 @@ const formatDate = (date: Date) => {
   return new Date(date).toLocaleDateString('zh-CN')
 }
 
+// 保存题目
+const saveQuestion = async () => {
+  try {
+    if (isEditing.value && editingQuestion.value) {
+      const updatedQuestion = await updateQuestion(editingQuestion.value.id, {
+        title: formData.title,
+        content: formData.content,
+        options: formData.options.filter(opt => opt.trim()),
+        correctAnswer: formData.correctAnswer,
+        explanation: formData.explanation,
+        difficulty: formData.difficulty,
+        subject: formData.subject,
+        tags: formData.tags
+      })
+      if (updatedQuestion) {
+        // 更新本地数据
+        const index = questions.value.findIndex(q => q.id === editingQuestion.value?.id)
+        if (index !== -1) {
+          questions.value[index] = updatedQuestion
+        }
+        message.success('题目更新成功')
+      } else {
+        message.error('题目更新失败')
+      }
+    } else {
+      const newQuestion = await addQuestion({
+        title: formData.title,
+        content: formData.content,
+        options: formData.options.filter(opt => opt.trim()),
+        correctAnswer: formData.correctAnswer,
+        explanation: formData.explanation,
+        difficulty: formData.difficulty,
+        subject: formData.subject,
+        tags: formData.tags,
+        isFavorite: false
+      })
+      // 添加到本地数据
+      questions.value.push(newQuestion)
+      message.success('题目添加成功')
+    }
+    closeModal()
+  } catch (error) {
+    console.error('保存题目失败:', error)
+    message.error('保存题目失败')
+  }
+}
+
+// 删除题目
+const deleteQuestion = async (id: string) => {
+  try {
+    const success = await deleteMockQuestion(id)
+    if (success) {
+      // 从本地数据中移除
+      questions.value = questions.value.filter(q => q.id !== id)
+      message.success('题目删除成功')
+    } else {
+      message.error('题目删除失败')
+    }
+  } catch (error) {
+    console.error('删除题目失败:', error)
+    message.error('删除题目失败')
+  }
+}
+
+// 切换收藏状态
+const toggleFavorite = async (id: string) => {
+  try {
+    const question = questions.value.find(q => q.id === id)
+    if (question) {
+      const updatedQuestion = await updateQuestion(id, {
+        isFavorite: !question.isFavorite
+      })
+      if (updatedQuestion) {
+        question.isFavorite = updatedQuestion.isFavorite
+        message.success(updatedQuestion.isFavorite ? '已添加到收藏' : '已取消收藏')
+      } else {
+        message.error('操作失败')
+      }
+    }
+  } catch (error) {
+    console.error('切换收藏状态失败:', error)
+    message.error('操作失败')
+  }
+}
+
 // 查看题目详情
 const viewQuestionDetail = (id: string) => {
   router.push(`/questions/${id}`)
@@ -358,15 +402,27 @@ const viewQuestionDetail = (id: string) => {
 const checkRouteQuery = () => {
   const editId = route.query.edit as string
   if (editId) {
-    const question = questionStore.getQuestionById(editId)
+    const question = questions.value.find(q => q.id === editId)
     if (question) {
       openModal(question)
     }
   }
 }
 
+// 获取题目数据
+const loadQuestions = async () => {
+  try {
+    const data = await fetchQuestions()
+    questions.value = data
+  } catch (error) {
+    console.error('获取题目数据失败:', error)
+    message.error('获取题目数据失败')
+  }
+}
+
 // 生命周期钩子
 onMounted(() => {
+  loadQuestions()
   checkRouteQuery()
 })
 </script>

@@ -44,12 +44,15 @@ const handleUpload = (info: any) => {
     return
   }
   if (info.file.status === 'done') {
-    // 获取图片URL
-    getBase64(info.file.originFileObj, (url: string) => {
-      loading.value = false
-      imageUrl.value = url
-      currentStep.value = 1 // 进入图片编辑步骤
-    })
+    // 模拟上传成功，直接进入下一步
+    loading.value = false
+    // 使用模拟图片URL
+    imageUrl.value = 'https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png'
+    currentStep.value = 1 // 进入图片编辑步骤
+    message.success('上传成功!')
+  } else if (info.file.status === 'error') {
+    loading.value = false
+    message.error('上传失败，请重试!')
   }
 }
 
@@ -77,7 +80,30 @@ const recognizeImage = async () => {
     // 这里应该调用实际的OCR API
     // 模拟OCR识别过程
     await new Promise(resolve => setTimeout(resolve, 1500))
-    recognizedText.value = '这是一道数学题：\n1. 如果x + y = 10，且x - y = 4，求x和y的值。\n\n解答：\n由x + y = 10和x - y = 4，\n得2x = 14，\n所以x = 7，y = 3。'
+    recognizedText.value = `这是一道数学题：
+
+**题目：**
+已知函数 f(x) = x² - 4x + 3，求：
+1. 函数的零点
+2. 函数的最小值
+3. 函数在区间 [0, 5] 上的最大值
+
+**解答：**
+1. 求零点：令 f(x) = 0
+   x² - 4x + 3 = 0
+   (x - 1)(x - 3) = 0
+   所以零点为 x = 1 和 x = 3
+
+2. 求最小值：
+   f(x) = x² - 4x + 3 = (x - 2)² - 1
+   当 x = 2 时，函数取得最小值 -1
+
+3. 求区间 [0, 5] 上的最大值：
+   由于函数开口向上，对称轴为 x = 2
+   在区间 [0, 5] 上，比较端点值：
+   f(0) = 3
+   f(5) = 25 - 20 + 3 = 8
+   所以最大值为 8`
     editedText.value = recognizedText.value
     currentStep.value = 2 // 进入文本编辑步骤
     message.success('识别成功!')
@@ -95,7 +121,6 @@ const saveQuestion = () => {
     return
   }
   
-  // 这里应该调用保存API
   // 模拟保存过程
   message.loading('保存中...', 1.5).then(() => {
     message.success('保存成功!')

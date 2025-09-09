@@ -1,6 +1,10 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
+import { fetchQuestions, type Question } from '@/mock/questions'
 import { SearchOutlined, FilterOutlined, PlusOutlined } from '@ant-design/icons-vue'
+
+const router = useRouter()
 
 // 搜索关键词
 const searchKeyword = ref('')
@@ -11,19 +15,24 @@ const currentFilter = ref('全部题目')
 // 筛选选项
 const filterOptions = ['全部题目', '重点关注', '课程', '巨大', '已完成']
 
-// 模拟题目数据 - 按照图片中的样式
-const questionsList = ref([
-  { id: 1, number: '题目练习1', progress: 60, status: 'error', date: '2024/01/01' },
-  { id: 2, number: '题目练习2', progress: 100, status: 'correct', date: '2024/01/01' },
-  { id: 3, number: '题目练习3', progress: 80, status: 'correct', date: '2024/01/01' },
-  { id: 4, number: '题目练习4', progress: 80, status: 'correct', date: '2024/01/01' },
-  { id: 5, number: '题目练习5', progress: 80, status: 'correct', date: '2024/01/01' },
-  { id: 6, number: '题目练习6', progress: 60, status: 'correct', date: '2024/01/01' },
-  { id: 7, number: '题目练习7', progress: 20, status: 'error', date: '2024/01/01' },
-  { id: 8, number: '题目练习8', progress: 100, status: 'pending', date: '2024/01/01' },
-  { id: 9, number: '题目练习9', progress: 20, status: 'error', date: '2024/01/01' },
-  { id: 10, number: '题目练习10', progress: 20, status: 'error', date: '2024/01/01' }
-])
+// 题目数据
+const questionsList = ref<Question[]>([])
+
+// 加载状态
+const loading = ref(false)
+
+// 获取题目数据
+const loadQuestions = async () => {
+  loading.value = true
+  try {
+    const data = await fetchQuestions()
+    questionsList.value = data
+  } catch (error) {
+    console.error('获取题目数据失败:', error)
+  } finally {
+    loading.value = false
+  }
+}
 
 // 搜索方法
 const onSearch = (value: string) => {
@@ -33,11 +42,21 @@ const onSearch = (value: string) => {
 // 筛选方法
 const onFilter = (filter: string) => {
   currentFilter.value = filter
+  // 根据筛选条件更新题目列表
+  filterQuestions()
+}
+
+// 筛选题目
+const filterQuestions = () => {
+  // 这里可以实现具体的筛选逻辑
+  // 目前只是简单地重新加载数据
+  loadQuestions()
 }
 
 // 添加题目方法
 const addQuestion = () => {
-  console.log('添加题目')
+  // 跳转到题目详情页，传递 'new' 作为ID表示新增题目
+  router.push('/questions/new')
 }
 
 // 获取状态颜色
@@ -64,6 +83,55 @@ const getStatusInfo = (status: string) => {
       return { text: '未知', color: '#d9d9d9' }
   }
 }
+
+// 获取进度百分比
+const getProgressPercent = (question: Question) => {
+  if (question.practiceCount === 0) return 0;
+  return Math.round((question.correctCount / question.practiceCount) * 100);
+};
+
+// 获取进度颜色
+const getProgressColor = (question: Question) => {
+  const percent = getProgressPercent(question);
+  if (percent >= 80) return '#52c41a'; // 绿色
+  if (percent >= 60) return '#fa8c16'; // 橙色
+  return '#ff4d4f'; // 红色
+};
+
+// 获取难度标签颜色
+const getDifficultyColor = (difficulty: string) => {
+  const colors = {
+    easy: '#52c41a',
+    medium: '#fa8c16',
+    hard: '#ff4d4f'
+  };
+  return colors[difficulty as keyof typeof colors] || '#1890ff';
+};
+
+// 获取难度标签文本
+const getDifficultyText = (difficulty: string) => {
+  const texts = {
+    easy: '简单',
+    medium: '中等',
+    hard: '困难'
+  };
+  return texts[difficulty as keyof typeof texts] || difficulty;
+};
+
+// 格式化日期
+const formatDate = (date: Date) => {
+  return new Date(date).toLocaleDateString('zh-CN');
+};
+
+// 获取已完成题目数量
+const getCompletedCount = () => {
+  return questionsList.value.filter(q => q.practiceCount > 0).length;
+};
+
+// 页面加载时获取数据
+onMounted(() => {
+  loadQuestions();
+});
 </script>
 
 <template>
@@ -100,7 +168,7 @@ const getStatusInfo = (status: string) => {
 
     <!-- 统计信息 -->
     <div class="stats-info">
-      <span>共 247 道题目，已完成 189 道</span>
+      <span>共 {{ questionsList.length }} 道题目，已完成 {{ getCompletedCount() }} 道</span>
     </div>
 
     <!-- 题目卡片网格 -->
@@ -109,20 +177,19 @@ const getStatusInfo = (status: string) => {
         v-for="question in questionsList" 
         :key="question.id" 
         class="question-card"
-        :data-status="question.status"
       >
-        <!-- 状态标签 -->
-        <div class="status-tag" :style="{ backgroundColor: getStatusInfo(question.status).color }">
-          {{ getStatusInfo(question.status).text }}
+        <!-- 收藏标签 -->
+        <div v-if="question.isFavorite" class="status-tag" style="background-color: #ff4d4f;">
+          收藏
         </div>
         
         <!-- 进度环形图 -->
         <div class="progress-section">
           <a-progress
             type="circle"
-            :percent="question.progress"
+            :percent="getProgressPercent(question)"
             :size="100"
-            :stroke-color="getStatusColor(question.status)"
+            :stroke-color="getProgressColor(question)"
             :show-info="true"
             :stroke-width="8"
           />
@@ -130,13 +197,17 @@ const getStatusInfo = (status: string) => {
         
         <!-- 题目信息 -->
         <div class="question-info">
-          <div class="question-number">{{ question.number }}</div>
+          <div class="question-number">{{ question.title }}</div>
           <div class="question-meta">
-            <span class="subject">数学</span>
-            <span class="difficulty">简单</span>
-            <span class="tags">代数</span>
+            <span class="subject">{{ question.subject }}</span>
+            <span class="difficulty" :style="{ backgroundColor: getDifficultyColor(question.difficulty) }">
+              {{ getDifficultyText(question.difficulty) }}
+            </span>
+            <span v-for="tag in question.tags.slice(0, 2)" :key="tag" class="tags">
+              {{ tag }}
+            </span>
           </div>
-          <div class="question-date">{{ question.date }}</div>
+          <div class="question-date">{{ formatDate(question.createdAt) }}</div>
         </div>
       </div>
     </div>
