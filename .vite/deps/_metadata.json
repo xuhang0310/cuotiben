@@ -1,0 +1,52 @@
+{
+  "hash": "f5c3b89f",
+  "configHash": "c06fb93b",
+  "lockfileHash": "144fad35",
+  "browserHash": "a593a688",
+  "optimized": {
+    "vue": {
+      "src": "../../node_modules/vue/dist/vue.runtime.esm-bundler.js",
+      "file": "vue.js",
+      "fileHash": "e99d743e",
+      "needsInterop": false
+    },
+    "pinia": {
+      "src": "../../node_modules/pinia/dist/pinia.mjs",
+      "file": "pinia.js",
+      "fileHash": "e6da82b8",
+      "needsInterop": false
+    },
+    "ant-design-vue": {
+      "src": "../../node_modules/ant-design-vue/es/index.js",
+      "file": "ant-design-vue.js",
+      "fileHash": "607a9791",
+      "needsInterop": false
+    },
+    "vue-i18n": {
+      "src": "../../node_modules/vue-i18n/dist/vue-i18n.mjs",
+      "file": "vue-i18n.js",
+      "fileHash": "9737b6c0",
+      "needsInterop": false
+    },
+    "vue-router": {
+      "src": "../../node_modules/vue-router/dist/vue-router.mjs",
+      "file": "vue-router.js",
+      "fileHash": "ad391be5",
+      "needsInterop": false
+    },
+    "@ant-design/icons-vue": {
+      "src": "../../node_modules/@ant-design/icons-vue/es/index.js",
+      "file": "@ant-design_icons-vue.js",
+      "fileHash": "58b6ffb2",
+      "needsInterop": false
+    }
+  },
+  "chunks": {
+    "chunk-FGXJ6QCM": {
+      "file": "chunk-FGXJ6QCM.js"
+    },
+    "chunk-YEII3YSI": {
+      "file": "chunk-YEII3YSI.js"
+    }
+  }
+}

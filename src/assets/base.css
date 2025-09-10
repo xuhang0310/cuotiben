@@ -1,0 +1,179 @@
+/* 错题本应用样式变量 - 马卡龙色系主题 */
+:root {
+  /* 基础色彩 */
+  --white: #ffffff;
+  --black: #181818;
+  --gray-100: #f8f8f8;
+  --gray-200: #f0f0f0;
+  --gray-300: #e0e0e0;
+  --gray-400: #bdbdbd;
+  --gray-500: #9e9e9e;
+  --gray-600: #757575;
+  --gray-700: #616161;
+  --gray-800: #424242;
+  --gray-900: #212121;
+  
+  /* 主题色 - 马卡龙色系 */
+  --primary-color: #5B8FF9; /* 蓝色 */
+  --primary-color-light: #8EB4FF;
+  --primary-color-dark: #3A6FF3;
+  
+  --secondary-color: #F6BD16; /* 黄色 */
+  --secondary-color-light: #FFD566;
+  --secondary-color-dark: #E5A400;
+  
+  /* 功能色 */
+  --success-color: #5AD8A6; /* 薄荷绿 */
+  --warning-color: #FF9F7F; /* 珊瑚橙 */
+  --error-color: #F7664E;   /* 草莓红 */
+  --info-color: #5D7092;    /* 淡紫蓝 */
+  
+  /* 中性色 */
+  --text-color: #333333;
+  --text-color-secondary: #666666;
+  --text-color-disabled: #999999;
+  --border-color: #e8e8e8;
+  --background-color: #ffffff;
+  --background-color-light: #f5f7fa;
+  --background-color-dark: #f0f2f5;
+  
+  /* 字体 */
+  --font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  --font-size-mini: 12px;
+  --font-size-small: 14px;
+  --font-size-base: 16px;
+  --font-size-medium: 18px;
+  --font-size-large: 20px;
+  --font-size-xlarge: 24px;
+  --font-size-xxlarge: 30px;
+  
+  /* 间距 */
+  --spacing-mini: 4px;
+  --spacing-small: 8px;
+  --spacing-base: 16px;
+  --spacing-medium: 24px;
+  --spacing-large: 32px;
+  --spacing-xlarge: 48px;
+  
+  /* 圆角 */
+  --border-radius-small: 4px;
+  --border-radius-medium: 8px;
+  --border-radius-large: 12px;
+  --border-radius-circle: 50%;
+  
+  /* 阴影 */
+  --box-shadow-small: 0 2px 8px rgba(0, 0, 0, 0.08);
+  --box-shadow-medium: 0 4px 12px rgba(0, 0, 0, 0.12);
+  --box-shadow-large: 0 8px 24px rgba(0, 0, 0, 0.16);
+  
+  /* 响应式断点 */
+  --breakpoint-xs: 480px;
+  --breakpoint-sm: 576px;
+  --breakpoint-md: 768px;
+  --breakpoint-lg: 992px;
+  --breakpoint-xl: 1200px;
+  --breakpoint-xxl: 1600px;
+  
+  /* 动画 */
+  --transition-fast: 0.2s;
+  --transition-base: 0.3s;
+  --transition-slow: 0.5s;
+  
+  /* 语义化变量 */
+  --color-background: var(--white);
+  --color-background-soft: var(--gray-100);
+  --color-background-mute: var(--gray-200);
+  
+  --color-border: var(--gray-300);
+  --color-border-hover: var(--gray-400);
+  
+  --color-heading: var(--text-color);
+  --color-text: var(--text-color);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    /* 暗色模式下的颜色调整 - 保持马卡龙色系风格 */
+    --black: #121212;
+    --white: #ffffff;
+    --gray-100: #1e1e1e;
+    --gray-200: #2c2c2c;
+    --gray-300: #3d3d3d;
+    --gray-400: #4f4f4f;
+    --gray-500: #707070;
+    --gray-600: #8a8a8a;
+    --gray-700: #a0a0a0;
+    --gray-800: #c7c7c7;
+    --gray-900: #e3e3e3;
+    
+    /* 主题色调整 - 暗色模式下稍微提亮 */
+    --primary-color: #6B9FFF; /* 亮蓝色 */
+    --primary-color-light: #9EC4FF;
+    --primary-color-dark: #4A7FE3;
+    
+    --secondary-color: #FFCD26; /* 亮黄色 */
+    --secondary-color-light: #FFE576;
+    --secondary-color-dark: #F5B410;
+    
+    /* 功能色调整 */
+    --success-color: #6AE8B6; /* 亮薄荷绿 */
+    --warning-color: #FFAF8F; /* 亮珊瑚橙 */
+    --error-color: #FF765E;   /* 亮草莓红 */
+    --info-color: #6D80A2;    /* 亮淡紫蓝 */
+    
+    /* 中性色调整 */
+    --text-color: #e0e0e0;
+    --text-color-secondary: #b0b0b0;
+    --text-color-disabled: #707070;
+    --border-color: #3d3d3d;
+    --background-color: #121212;
+    --background-color-light: #1e1e1e;
+    --background-color-dark: #2c2c2c;
+    
+    /* 语义化变量调整 */
+    --color-background: var(--black);
+    --color-background-soft: var(--gray-100);
+    --color-background-mute: var(--gray-200);
+    
+    --color-border: var(--gray-300);
+    --color-border-hover: var(--gray-400);
+    
+    --color-heading: var(--white);
+    --color-text: var(--gray-800);
+  }
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  font-weight: normal;
+}
+
+body {
+  min-height: 100vh;
+  color: var(--color-text);
+  background: var(--color-background);
+  transition:
+    color 0.5s,
+    background-color 0.5s;
+  line-height: 1.6;
+  font-family:
+    Inter,
+    -apple-system,
+    BlinkMacSystemFont,
+    'Segoe UI',
+    Roboto,
+    Oxygen,
+    Ubuntu,
+    Cantarell,
+    'Fira Sans',
+    'Droid Sans',
+    'Helvetica Neue',
+    sans-serif;
+  font-size: 15px;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
