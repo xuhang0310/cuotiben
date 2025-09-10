@@ -346,199 +346,54 @@ onMounted(() => {
     </a-card>
 
     <!-- 基础统计 -->
-    <a-card title="学习概览" class="stats-card">
-      <a-row :gutter="[16, 16]">
-        <a-col :xs="24" :sm="12" :md="6">
-          <a-statistic
-            title="总题数"
-            :value="basicStats.totalQuestions"
-            suffix="题"
-          >
-            <template #prefix>
-              <BookOutlined style="color: #1890ff;" />
-            </template>
-          </a-statistic>
-        </a-col>
-        
-        <a-col :xs="24" :sm="12" :md="6">
-          <a-statistic
-            title="已练习"
-            :value="basicStats.totalPracticed"
-            suffix="题"
-          >
-            <template #prefix>
-              <CheckCircleOutlined style="color: #52c41a;" />
-            </template>
-          </a-statistic>
-        </a-col>
-        
-        <a-col :xs="24" :sm="12" :md="6">
-          <a-statistic
-            title="正确率"
-            :value="basicStats.accuracy"
-            suffix="%"
-            :value-style="{ color: basicStats.accuracy >= 80 ? '#52c41a' : basicStats.accuracy >= 60 ? '#fa8c16' : '#ff4d4f' }"
-          >
-            <template #prefix>
-              <TrophyOutlined :style="{ color: basicStats.accuracy >= 80 ? '#52c41a' : basicStats.accuracy >= 60 ? '#fa8c16' : '#ff4d4f' }" />
-            </template>
-          </a-statistic>
-        </a-col>
-        
-        <a-col :xs="24" :sm="12" :md="6">
-          <a-statistic
-            title="平均用时"
-            :value="basicStats.averageTime"
-            suffix="秒"
-          >
-            <template #prefix>
-              <ClockCircleOutlined style="color: #722ed1;" />
-            </template>
-          </a-statistic>
-        </a-col>
-      </a-row>
-    </a-card>
+    <StatisticsCard
+      title="学习概览"
+      :stats="[
+        {
+          title: '总题数',
+          value: basicStats.totalQuestions,
+          suffix: '题',
+          prefixIcon: 'BookOutlined'
+        },
+        {
+          title: '已练习',
+          value: basicStats.totalPracticed,
+          suffix: '题',
+          prefixIcon: 'CheckCircleOutlined'
+        },
+        {
+          title: '正确率',
+          value: basicStats.accuracy,
+          suffix: '%',
+          valueStyle: { color: basicStats.accuracy >= 80 ? '#52c41a' : basicStats.accuracy >= 60 ? '#fa8c16' : '#ff4d4f' },
+          prefixIcon: 'TrophyOutlined'
+        },
+        {
+          title: '平均用时',
+          value: basicStats.averageTime,
+          suffix: '秒',
+          prefixIcon: 'ClockCircleOutlined'
+        }
+      ]"
+    />
 
     <a-row :gutter="[16, 16]">
       <!-- 科目统计 -->
       <a-col :xs="24" :lg="12">
-        <a-card title="科目统计" class="chart-card">
-          <div v-if="subjectStats.length === 0" class="empty-state">
-            <a-empty description="暂无数据" />
-          </div>
-          <div v-else class="subject-stats">
-            <div
-              v-for="subject in subjectStats"
-              :key="subject.subject"
-              class="subject-item"
-            >
-              <div class="subject-header">
-                <span class="subject-name">{{ subject.subject }}</span>
-                <span class="subject-accuracy" :class="{
-                  'high': subject.accuracy >= 80,
-                  'medium': subject.accuracy >= 60 && subject.accuracy < 80,
-                  'low': subject.accuracy < 60
-                }">
-                  {{ subject.accuracy }}%
-                </span>
-              </div>
-              <div class="subject-details">
-                <span>练习 {{ subject.total }} 题</span>
-                <span>正确 {{ subject.correct }} 题</span>
-                <span>平均 {{ subject.averageTime }} 秒</span>
-              </div>
-              <a-progress
-                :percent="subject.accuracy"
-                :show-info="false"
-                :stroke-color="subject.accuracy >= 80 ? '#52c41a' : subject.accuracy >= 60 ? '#fa8c16' : '#ff4d4f'"
-              />
-            </div>
-          </div>
-        </a-card>
+        <SubjectStatsCard :stats="subjectStats" />
       </a-col>
 
       <!-- 难度统计 -->
       <a-col :xs="24" :lg="12">
-        <a-card title="难度统计" class="chart-card">
-          <div v-if="difficultyStats.length === 0" class="empty-state">
-            <a-empty description="暂无数据" />
-          </div>
-          <div v-else class="difficulty-stats">
-            <div
-              v-for="difficulty in difficultyStats"
-              :key="difficulty.difficulty"
-              class="difficulty-item"
-            >
-              <div class="difficulty-header">
-                <a-tag :color="getDifficultyColor(difficulty.difficulty)">
-                  {{ getDifficultyText(difficulty.difficulty) }}
-                </a-tag>
-                <span class="difficulty-accuracy">
-                  {{ difficulty.accuracy }}%
-                </span>
-              </div>
-              <div class="difficulty-details">
-                <span>练习 {{ difficulty.total }} 题</span>
-                <span>正确 {{ difficulty.correct }} 题</span>
-              </div>
-              <a-progress
-                :percent="difficulty.accuracy"
-                :show-info="false"
-                :stroke-color="getDifficultyColor(difficulty.difficulty)"
-              />
-            </div>
-          </div>
-        </a-card>
+        <DifficultyStatsCard :stats="difficultyStats" />
       </a-col>
     </a-row>
 
     <!-- 错题分析 -->
-    <a-card title="错题分析" class="analysis-card">
-      <div v-if="wrongQuestionAnalysis.length === 0" class="empty-state">
-        <a-empty description="暂无错题数据" />
-      </div>
-      <div v-else>
-        <a-table
-          :columns="[
-            { title: '题目', dataIndex: 'question', key: 'question', width: '40%' },
-            { title: '科目', dataIndex: 'subject', key: 'subject', width: '15%' },
-            { title: '难度', dataIndex: 'difficulty', key: 'difficulty', width: '15%' },
-            { title: '错误次数', dataIndex: 'wrongCount', key: 'wrongCount', width: '15%' },
-            { title: '错误率', dataIndex: 'errorRate', key: 'errorRate', width: '15%' }
-          ]"
-          :data-source="wrongQuestionAnalysis.map((item, index) => ({
-            key: index,
-            question: item.question.title,
-            subject: item.question.subject,
-            difficulty: item.question.difficulty,
-            wrongCount: item.wrongCount,
-            errorRate: item.errorRate
-          }))"
-          :pagination="{ pageSize: 5 }"
-          size="small"
-        >
-          <template #bodyCell="{ column, record }">
-            <template v-if="column.key === 'question'">
-              <div class="question-cell">
-                <div class="question-title">{{ record.question }}</div>
-              </div>
-            </template>
-            <template v-else-if="column.key === 'difficulty'">
-              <a-tag :color="getDifficultyColor(record.difficulty)">
-                {{ getDifficultyText(record.difficulty) }}
-              </a-tag>
-            </template>
-            <template v-else-if="column.key === 'errorRate'">
-              <span :class="{
-                'error-rate-high': record.errorRate >= 70,
-                'error-rate-medium': record.errorRate >= 40 && record.errorRate < 70,
-                'error-rate-low': record.errorRate < 40
-              }">
-                {{ record.errorRate }}%
-              </span>
-            </template>
-          </template>
-        </a-table>
-      </div>
-    </a-card>
+    <WrongQuestionAnalysisCard :questions="wrongQuestionAnalysis" />
 
     <!-- 学习建议 -->
-    <a-card title="学习建议" class="recommendations-card">
-      <div v-if="studyRecommendations.length === 0" class="empty-state">
-        <a-empty description="暂无建议" />
-      </div>
-      <div v-else class="recommendations-list">
-        <a-alert
-          v-for="(recommendation, index) in studyRecommendations"
-          :key="index"
-          :type="recommendation.type"
-          :message="recommendation.title"
-          :description="recommendation.content"
-          show-icon
-          class="recommendation-item"
-        />
-      </div>
-    </a-card>
+    <StudyRecommendationsCard :recommendations="studyRecommendations" />
   </div>
 </template>
 

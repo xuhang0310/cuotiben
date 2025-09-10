@@ -8,35 +8,15 @@ import {
   HeartOutlined,
   HeartFilled,
   EditOutlined,
-  ClockCircleOutlined,
-  CheckCircleOutlined,
   RobotOutlined,
   BulbOutlined,
   ThunderboltOutlined
 } from '@ant-design/icons-vue'
-import MarkdownIt from 'markdown-it'
-import hljs from 'highlight.js'
-
-// 声明highlight.js模块（markdown-it现在有类型定义）
-declare module 'highlight.js'
-
-// 初始化Markdown解析器
-const md = new MarkdownIt({
-  html: true,
-  linkify: true,
-  typographer: true,
-  highlight: function (str: string, lang: string): string {
-    if (lang && hljs.getLanguage(lang)) {
-      try {
-        return hljs.highlight(str, { language: lang }).value
-      } catch (error) {
-        // 语法高亮失败时返回原始字符串
-        console.warn('Syntax highlighting failed:', error)
-      }
-    }
-    return ''
-  }
-})
+import MarkdownRenderer from '@/components/MarkdownRenderer.vue'
+import DifficultyTag from '@/components/DifficultyTag.vue'
+import SubjectTag from '@/components/SubjectTag.vue'
+import FavoriteButton from '@/components/FavoriteButton.vue'
+import PracticeStats from '@/components/PracticeStats.vue'
 
 const route = useRoute()
 const router = useRouter()
@@ -255,26 +235,6 @@ const editQuestion = () => {
   })
 }
 
-// 获取难度标签颜色
-const getDifficultyColor = (difficulty: string) => {
-  const colors = {
-    easy: 'green',
-    medium: 'orange',
-    hard: 'red'
-  }
-  return colors[difficulty as keyof typeof colors] || 'default'
-}
-
-// 获取难度标签文本
-const getDifficultyText = (difficulty: string) => {
-  const texts = {
-    easy: '简单',
-    medium: '中等',
-    hard: '困难'
-  }
-  return texts[difficulty as keyof typeof texts] || difficulty
-}
-
 // 计算正确率
 const getAccuracy = (question: Question) => {
   if (question.practiceCount === 0) return '-'
@@ -284,11 +244,6 @@ const getAccuracy = (question: Question) => {
 // 格式化日期
 const formatDate = (date: Date) => {
   return new Date(date).toLocaleDateString('zh-CN')
-}
-
-// 渲染Markdown内容
-const renderMarkdown = (content: string) => {
-  return md.render(content)
 }
 
 // 生命周期钩子
@@ -317,14 +272,10 @@ onMounted(() => {
         <div class="question-title">
           <h1>{{ question.title }}</h1>
           <div class="question-actions">
-            <a-button 
-              type="text" 
-              size="large"
-              @click="toggleFavorite"
-            >
-              <HeartFilled v-if="question.isFavorite" style="color: #ff4d4f; font-size: 20px;" />
-              <HeartOutlined v-else style="font-size: 20px;" />
-            </a-button>
+            <FavoriteButton 
+              :is-favorite="question.isFavorite"
+              @toggle="toggleFavorite"
+            />
             
             <a-button 
               type="text" 
@@ -337,10 +288,8 @@ onMounted(() => {
         </div>
         
         <div class="question-meta">
-          <a-tag :color="getDifficultyColor(question.difficulty)">
-            {{ getDifficultyText(question.difficulty) }}
-          </a-tag>
-          <a-tag color="blue">{{ question.subject }}</a-tag>
+          <DifficultyTag :difficulty="question.difficulty" />
+          <SubjectTag :subject="question.subject" />
           <a-tag v-for="tag in question.tags" :key="tag" color="cyan">
             {{ tag }}
           </a-tag>
@@ -352,7 +301,7 @@ onMounted(() => {
       <div class="question-content">
         <div class="content-section">
           <h2>题目内容</h2>
-          <div class="markdown-content" v-html="renderMarkdown(question.content)"></div>
+          <MarkdownRenderer :content="question.content" />
         </div>
         
         <div class="content-section" v-if="question.options && question.options.length > 0">
@@ -376,7 +325,7 @@ onMounted(() => {
         
         <div class="content-section" v-if="question.explanation">
           <h3>解析</h3>
-          <div class="markdown-content" v-html="renderMarkdown(question.explanation)"></div>
+          <MarkdownRenderer :content="question.explanation" />
         </div>
       </div>
       
@@ -384,30 +333,11 @@ onMounted(() => {
       
       <div class="question-stats">
         <h2>练习统计</h2>
-        <div class="stats-grid">
-          <div class="stat-item">
-            <ClockCircleOutlined />
-            <div class="stat-content">
-              <div class="stat-value">{{ question.practiceCount }}</div>
-              <div class="stat-label">练习次数</div>
-            </div>
-          </div>
-          
-          <div class="stat-item">
-            <CheckCircleOutlined />
-            <div class="stat-content">
-              <div class="stat-value">{{ getAccuracy(question) }}</div>
-              <div class="stat-label">正确率</div>
-            </div>
-          </div>
-          
-          <div class="stat-item">
-            <div class="stat-content">
-              <div class="stat-value">{{ question.lastPracticeAt ? formatDate(question.lastPracticeAt) : '-' }}</div>
-              <div class="stat-label">最近练习</div>
-            </div>
-          </div>
-        </div>
+        <PracticeStats 
+          :practice-count="question.practiceCount"
+          :correct-count="question.correctCount"
+          :last-practice-at="question.lastPracticeAt"
+        />
       </div>
       
       <a-divider />
@@ -430,7 +360,9 @@ onMounted(() => {
         <a-skeleton :loading="aiAnalysisLoading" active :paragraph="{ rows: 6 }" v-if="aiAnalysisLoading">
         </a-skeleton>
         
-        <div v-if="aiAnalysis && !aiAnalysisLoading" class="markdown-content" v-html="renderMarkdown(aiAnalysis)"></div>
+        <div v-if="aiAnalysis && !aiAnalysisLoading">
+          <MarkdownRenderer :content="aiAnalysis" />
+        </div>
         
         <div v-if="!aiAnalysis && !aiAnalysisLoading" class="empty-analysis">
           <BulbOutlined style="font-size: 48px; color: #faad14;" />
@@ -455,9 +387,7 @@ onMounted(() => {
               <div class="related-title">{{ relatedQ.title }}</div>
             </template>
             <template #extra>
-              <a-tag :color="getDifficultyColor(relatedQ.difficulty)">
-                {{ getDifficultyText(relatedQ.difficulty) }}
-              </a-tag>
+              <DifficultyTag :difficulty="relatedQ.difficulty" />
             </template>
             <div class="related-subject">{{ relatedQ.subject }}</div>
           </a-card>

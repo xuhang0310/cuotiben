@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, watch } from 'vue'
-import { useQuestionStore, type Question } from '@/stores/question'
+import { useQuestionStore } from '@/stores/question'
+import type { Question } from '@/stores/question'
 import {
   PlayCircleOutlined,
   PauseCircleOutlined,
@@ -11,9 +12,15 @@ import {
   ClockCircleOutlined,
   ReloadOutlined
 } from '@ant-design/icons-vue'
-import { message } from 'ant-design-vue'
+import { message, Skeleton } from 'ant-design-vue'
+import DifficultyTag from '@/components/DifficultyTag.vue'
+import SubjectTag from '@/components/SubjectTag.vue'
+import FavoriteButton from '@/components/FavoriteButton.vue'
 
 const questionStore = useQuestionStore()
+
+// 调试信息
+console.log('PracticeView: questionStore initialized', questionStore.questions.length)
 
 // 练习状态
 const practiceState = ref<'idle' | 'practicing' | 'finished'>('idle')
@@ -80,7 +87,14 @@ const practiceStats = computed(() => {
 
 // 科目选项
 const subjectOptions = computed(() => {
+  // 确保问题数据存在
+  console.log('PracticeView: calculating subjectOptions', questionStore.questions.length)
+  if (!questionStore.questions || questionStore.questions.length === 0) {
+    console.log('PracticeView: no questions found')
+    return []
+  }
   const subjects = Array.from(new Set(questionStore.questions.map(q => q.subject)))
+  console.log('PracticeView: subjects found', subjects)
   return subjects.map(subject => ({ label: subject, value: subject }))
 })
 
@@ -250,31 +264,10 @@ const formatTime = (seconds: number) => {
   return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`
 }
 
-// 获取难度颜色
-const getDifficultyColor = (difficulty: string) => {
-  const colors = {
-    easy: 'green',
-    medium: 'orange',
-    hard: 'red'
-  }
-  return colors[difficulty as keyof typeof colors] || 'default'
-}
-
-// 获取难度文本
-const getDifficultyText = (difficulty: string) => {
-  const texts = {
-    easy: '简单',
-    medium: '中等',
-    hard: '困难'
-  }
-  return texts[difficulty as keyof typeof texts] || difficulty
-}
-
 // 组件卸载时清理定时器
-onMounted(() => {
-  return () => {
-    stopTimer()
-  }
+import { onUnmounted } from 'vue'
+onUnmounted(() => {
+  stopTimer()
 })
 
 // 监听练习状态变化
@@ -289,251 +282,48 @@ watch(practiceState, (newState) => {
   <div class="practice-container">
     <!-- 练习配置 -->
     <div v-if="practiceState === 'idle'" class="config-section">
-      <a-card title="练习配置" class="config-card">
-        <a-form layout="vertical" :model="practiceConfig">
-          <a-row :gutter="16">
-            <a-col :xs="24" :sm="12" :md="6">
-              <a-form-item label="练习模式">
-                <a-select v-model:value="practiceConfig.mode">
-                  <a-select-option
-                    v-for="option in modeOptions"
-                    :key="option.value"
-                    :value="option.value"
-                  >
-                    {{ option.label }}
-                  </a-select-option>
-                </a-select>
-              </a-form-item>
-            </a-col>
-            
-            <a-col :xs="24" :sm="12" :md="6">
-              <a-form-item label="题目数量">
-                <a-input-number
-                  v-model:value="practiceConfig.count"
-                  :min="1"
-                  :max="100"
-                  style="width: 100%;"
-                />
-              </a-form-item>
-            </a-col>
-            
-            <a-col :xs="24" :sm="12" :md="6">
-              <a-form-item label="科目筛选">
-                <a-select
-                  v-model:value="practiceConfig.subject"
-                  placeholder="全部科目"
-                  allow-clear
-                >
-                  <a-select-option
-                    v-for="option in subjectOptions"
-                    :key="option.value"
-                    :value="option.value"
-                  >
-                    {{ option.label }}
-                  </a-select-option>
-                </a-select>
-              </a-form-item>
-            </a-col>
-            
-            <a-col :xs="24" :sm="12" :md="6">
-              <a-form-item label="难度筛选">
-                <a-select
-                  v-model:value="practiceConfig.difficulty"
-                  placeholder="全部难度"
-                  allow-clear
-                >
-                  <a-select-option
-                    v-for="option in difficultyOptions"
-                    :key="option.value"
-                    :value="option.value"
-                  >
-                    {{ option.label }}
-                  </a-select-option>
-                </a-select>
-              </a-form-item>
-            </a-col>
-          </a-row>
-          
-          <a-form-item>
-            <a-button type="primary" size="large" @click="startPractice">
-              <PlayCircleOutlined />
-              开始练习
-            </a-button>
-          </a-form-item>
-        </a-form>
-      </a-card>
+      <PracticeConfigCard
+        :config="practiceConfig"
+        :subject-options="subjectOptions"
+        :difficulty-options="difficultyOptions"
+        :mode-options="modeOptions"
+        @update:config="(val) => practiceConfig = val"
+        @start="startPractice"
+      />
     </div>
 
     <!-- 练习进行中 -->
-    <div v-if="practiceState === 'practicing' && currentQuestion" class="practice-section">
-      <!-- 进度条 -->
-      <a-card class="progress-card" :bordered="false">
-        <div class="progress-info">
-          <div class="progress-text">
-            第 {{ progress.current }} 题 / 共 {{ progress.total }} 题
-          </div>
-          <div class="time-info">
-            <ClockCircleOutlined />
-            {{ formatTime(timeSpent) }}
-          </div>
-        </div>
-        <a-progress :percent="progress.percentage" :show-info="false" />
-      </a-card>
-
-      <!-- 题目内容 -->
-      <a-card class="question-card">
-        <div class="question-header">
-          <div class="question-meta">
-            <a-tag :color="getDifficultyColor(currentQuestion.difficulty)">
-              {{ getDifficultyText(currentQuestion.difficulty) }}
-            </a-tag>
-            <a-tag>{{ currentQuestion.subject }}</a-tag>
-          </div>
-          <a-button
-            type="text"
-            @click="toggleFavorite(currentQuestion.id)"
-          >
-            <HeartFilled v-if="currentQuestion.isFavorite" style="color: #ff4d4f;" />
-            <HeartOutlined v-else />
-          </a-button>
-        </div>
-        
-        <div class="question-content">
-          <h3>{{ currentQuestion.title }}</h3>
-          <div class="question-text">{{ currentQuestion.content }}</div>
-          
-          <!-- 选择题选项 -->
-          <div v-if="currentQuestion.options && currentQuestion.options.length > 0" class="options-list">
-            <a-radio-group v-model:value="userAnswer" class="options-group">
-              <div
-                v-for="(option, index) in currentQuestion.options"
-                :key="index"
-                class="option-item"
-              >
-                <a-radio :value="String.fromCharCode(65 + index)">
-                  <span class="option-label">{{ String.fromCharCode(65 + index) }}.</span>
-                  {{ option }}
-                </a-radio>
-              </div>
-            </a-radio-group>
-          </div>
-          
-          <!-- 填空题输入 -->
-          <div v-else class="answer-input">
-            <a-input
-              v-model:value="userAnswer"
-              placeholder="请输入答案"
-              size="large"
-              @press-enter="submitAnswer"
-            />
-          </div>
-        </div>
-        
-        <!-- 答案解析 -->
-        <div v-if="showAnswer" class="answer-section">
-          <a-divider />
-          <div class="answer-result">
-            <div class="result-header">
-              <CheckCircleOutlined v-if="practiceResults[practiceResults.length - 1]?.isCorrect" class="correct-icon" />
-              <CloseCircleOutlined v-else class="wrong-icon" />
-              <span class="result-text">
-                {{ practiceResults[practiceResults.length - 1]?.isCorrect ? '回答正确' : '回答错误' }}
-              </span>
-            </div>
-            
-            <div class="answer-details">
-              <p><strong>正确答案：</strong>{{ currentQuestion.correctAnswer }}</p>
-              <p v-if="!practiceResults[practiceResults.length - 1]?.isCorrect">
-                <strong>您的答案：</strong>{{ practiceResults[practiceResults.length - 1]?.userAnswer }}
-              </p>
-              <div v-if="currentQuestion.explanation" class="explanation">
-                <strong>解析：</strong>
-                <div class="explanation-content">{{ currentQuestion.explanation }}</div>
-              </div>
-            </div>
-          </div>
-        </div>
-        
-        <!-- 操作按钮 -->
-        <div class="question-actions">
-          <a-button
-            v-if="!showAnswer"
-            type="primary"
-            size="large"
-            @click="submitAnswer"
-            :disabled="!userAnswer.trim()"
-          >
-            提交答案
-          </a-button>
-          
-          <a-button
-            v-if="showAnswer"
-            type="primary"
-            size="large"
-            @click="nextQuestion"
-          >
-            {{ currentQuestionIndex < practiceQuestions.length - 1 ? '下一题' : '完成练习' }}
-          </a-button>
-        </div>
-      </a-card>
+    <div v-else-if="practiceState === 'practicing' && currentQuestion" class="practice-section">
+      <PracticeQuestionCard
+        :question="currentQuestion"
+        :user-answer="userAnswer"
+        :show-answer="showAnswer"
+        :time-spent="timeSpent"
+        :is-favorite="currentQuestion?.isFavorite || false"
+        :is-correct="practiceResults.length > 0 ? practiceResults[practiceResults.length - 1]?.isCorrect : undefined"
+        @update:userAnswer="(val) => userAnswer = val"
+        @submit="submitAnswer"
+        @next="nextQuestion"
+        @toggleFavorite="() => currentQuestion && toggleFavorite(currentQuestion.id)"
+      >
+        <template #nextButtonText>
+          {{ currentQuestionIndex < practiceQuestions.length - 1 ? '下一题' : '完成练习' }}
+        </template>
+      </PracticeQuestionCard>
     </div>
 
     <!-- 练习结果 -->
-    <div v-if="practiceState === 'finished'" class="result-section">
-      <a-card title="练习完成" class="result-card">
-        <div class="result-summary">
-          <a-row :gutter="[16, 16]">
-            <a-col :xs="24" :sm="12" :md="6">
-              <a-statistic
-                title="总题数"
-                :value="practiceStats.total"
-                suffix="题"
-              />
-            </a-col>
-            
-            <a-col :xs="24" :sm="12" :md="6">
-              <a-statistic
-                title="正确数"
-                :value="practiceStats.correct"
-                suffix="题"
-                :value-style="{ color: '#52c41a' }"
-              />
-            </a-col>
-            
-            <a-col :xs="24" :sm="12" :md="6">
-              <a-statistic
-                title="正确率"
-                :value="practiceStats.accuracy"
-                suffix="%"
-                :value-style="{ color: practiceStats.accuracy >= 80 ? '#52c41a' : practiceStats.accuracy >= 60 ? '#fa8c16' : '#ff4d4f' }"
-              />
-            </a-col>
-            
-            <a-col :xs="24" :sm="12" :md="6">
-              <a-statistic
-                title="平均用时"
-                :value="practiceStats.averageTime"
-                suffix="秒"
-                :value-style="{ color: '#1890ff' }"
-              />
-            </a-col>
-          </a-row>
-        </div>
-        
-        <a-divider />
-        
-        <div class="result-actions">
-          <a-space>
-            <a-button type="primary" @click="restartPractice">
-              <ReloadOutlined />
-              重新练习
-            </a-button>
-            <a-button @click="practiceState = 'idle'">
-              返回配置
-            </a-button>
-          </a-space>
-        </div>
-      </a-card>
+    <div v-else-if="practiceState === 'finished'" class="result-section">
+      <PracticeResultCard
+        :stats="practiceStats"
+        @restart="restartPractice"
+        @backToConfig="() => practiceState = 'idle'"
+      />
+    </div>
+    
+    <!-- 加载状态 -->
+    <div v-else class="loading-section">
+      <a-spin size="large" />
     </div>
   </div>
 </template>

@@ -1,10 +1,7 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
-import { useRouter } from 'vue-router'
 import { fetchQuestions, type Question } from '@/mock/questions'
-import { SearchOutlined, FilterOutlined, PlusOutlined } from '@ant-design/icons-vue'
-
-const router = useRouter()
+import QuestionCard from '@/components/QuestionCard.vue'
 
 // 搜索关键词
 const searchKeyword = ref('')
@@ -53,76 +50,6 @@ const filterQuestions = () => {
   loadQuestions()
 }
 
-// 添加题目方法
-const addQuestion = () => {
-  // 跳转到题目详情页，传递 'new' 作为ID表示新增题目
-  router.push('/questions/new')
-}
-
-// 获取状态颜色
-const getStatusColor = (status: string) => {
-  const colorMap: Record<string, string> = {
-    'correct': '#52c41a',
-    'error': '#ff4d4f', 
-    'pending': '#fa8c16',
-    'not-started': '#d9d9d9'
-  };
-  return colorMap[status] || '#1890ff';
-};
-
-// 获取状态标签文本和颜色
-const getStatusInfo = (status: string) => {
-  switch (status) {
-    case 'correct':
-      return { text: '正确', color: '#52c41a' }
-    case 'error':
-      return { text: '错误', color: '#ff4d4f' }
-    case 'pending':
-      return { text: '待做', color: '#fa8c16' }
-    default:
-      return { text: '未知', color: '#d9d9d9' }
-  }
-}
-
-// 获取进度百分比
-const getProgressPercent = (question: Question) => {
-  if (question.practiceCount === 0) return 0;
-  return Math.round((question.correctCount / question.practiceCount) * 100);
-};
-
-// 获取进度颜色
-const getProgressColor = (question: Question) => {
-  const percent = getProgressPercent(question);
-  if (percent >= 80) return '#52c41a'; // 绿色
-  if (percent >= 60) return '#fa8c16'; // 橙色
-  return '#ff4d4f'; // 红色
-};
-
-// 获取难度标签颜色
-const getDifficultyColor = (difficulty: string) => {
-  const colors = {
-    easy: '#52c41a',
-    medium: '#fa8c16',
-    hard: '#ff4d4f'
-  };
-  return colors[difficulty as keyof typeof colors] || '#1890ff';
-};
-
-// 获取难度标签文本
-const getDifficultyText = (difficulty: string) => {
-  const texts = {
-    easy: '简单',
-    medium: '中等',
-    hard: '困难'
-  };
-  return texts[difficulty as keyof typeof texts] || difficulty;
-};
-
-// 格式化日期
-const formatDate = (date: Date) => {
-  return new Date(date).toLocaleDateString('zh-CN');
-};
-
 // 获取已完成题目数量
 const getCompletedCount = () => {
   return questionsList.value.filter(q => q.practiceCount > 0).length;
@@ -136,80 +63,23 @@ onMounted(() => {
 
 <template>
   <div class="home-container">
-    <!-- 顶部筛选区域 -->
-    <div class="header-section">
-      <div class="header-left">
-        <h2 class="page-title">错题列表</h2>
-        <div class="filter-tabs">
-          <a-button 
-            v-for="filter in filterOptions" 
-            :key="filter"
-            type="text" 
-            :class="['filter-btn', { active: currentFilter === filter }]"
-            @click="onFilter(filter)"
-          >
-            {{ filter }}
-          </a-button>
-        </div>
-      </div>
-      <div class="header-right">
-        <a-input-search
-          v-model:value="searchKeyword"
-          placeholder="搜索题目..."
-          class="search-input"
-          @search="onSearch"
-        />
-        <a-button type="primary" class="add-btn" @click="addQuestion">
-          <PlusOutlined />
-          新增题目
-        </a-button>
-      </div>
-    </div>
-
-    <!-- 统计信息 -->
-    <div class="stats-info">
-      <span>共 {{ questionsList.length }} 道题目，已完成 {{ getCompletedCount() }} 道</span>
-    </div>
+    <HomeFilterSection
+      v-model:searchKeyword="searchKeyword"
+      v-model:currentFilter="currentFilter"
+      :filterOptions="filterOptions"
+      :questionsCount="questionsList.length"
+      :completedCount="getCompletedCount()"
+      @search="onSearch"
+      @filter="onFilter"
+    />
 
     <!-- 题目卡片网格 -->
     <div class="questions-grid">
-      <div 
-        v-for="question in questionsList" 
-        :key="question.id" 
-        class="question-card"
-      >
-        <!-- 收藏标签 -->
-        <div v-if="question.isFavorite" class="status-tag" style="background-color: #ff4d4f;">
-          收藏
-        </div>
-        
-        <!-- 进度环形图 -->
-        <div class="progress-section">
-          <a-progress
-            type="circle"
-            :percent="getProgressPercent(question)"
-            :size="100"
-            :stroke-color="getProgressColor(question)"
-            :show-info="true"
-            :stroke-width="8"
-          />
-        </div>
-        
-        <!-- 题目信息 -->
-        <div class="question-info">
-          <div class="question-number">{{ question.title }}</div>
-          <div class="question-meta">
-            <span class="subject">{{ question.subject }}</span>
-            <span class="difficulty" :style="{ backgroundColor: getDifficultyColor(question.difficulty) }">
-              {{ getDifficultyText(question.difficulty) }}
-            </span>
-            <span v-for="tag in question.tags.slice(0, 2)" :key="tag" class="tags">
-              {{ tag }}
-            </span>
-          </div>
-          <div class="question-date">{{ formatDate(question.createdAt) }}</div>
-        </div>
-      </div>
+      <QuestionCard
+        v-for="question in questionsList"
+        :key="question.id"
+        :question="question"
+      />
     </div>
   </div>
 </template>

@@ -370,11 +370,11 @@ onMounted(() => {
     <a-row :gutter="[16, 16]">
       <!-- 用户设置 -->
       <a-col :xs="24" :lg="12">
-        <a-card title="用户设置" class="settings-card">
-          <template #extra>
-            <UserOutlined />
-          </template>
-          
+        <SettingsSection
+          title="用户设置"
+          icon="UserOutlined"
+          @save="saveUserSettings"
+        >
           <a-form layout="vertical" :model="userSettings">
             <a-form-item label="用户名">
               <a-input v-model:value="userSettings.username" placeholder="请输入用户名" />
@@ -422,23 +422,17 @@ onMounted(() => {
                 </a-select-option>
               </a-select>
             </a-form-item>
-            
-            <a-form-item>
-              <a-button type="primary" @click="saveUserSettings">
-                保存用户设置
-              </a-button>
-            </a-form-item>
           </a-form>
-        </a-card>
+        </SettingsSection>
       </a-col>
 
       <!-- 通知设置 -->
       <a-col :xs="24" :lg="12">
-        <a-card title="通知设置" class="settings-card">
-          <template #extra>
-            <BellOutlined />
-          </template>
-          
+        <SettingsSection
+          title="通知设置"
+          icon="BellOutlined"
+          @save="saveNotificationSettings"
+        >
           <a-form layout="vertical" :model="notificationSettings">
             <a-form-item label="启用通知">
               <a-switch v-model:checked="notificationSettings.enableNotifications" />
@@ -463,23 +457,17 @@ onMounted(() => {
             <a-form-item label="周报推送">
               <a-switch v-model:checked="notificationSettings.weeklyReport" />
             </a-form-item>
-            
-            <a-form-item>
-              <a-button type="primary" @click="saveNotificationSettings">
-                保存通知设置
-              </a-button>
-            </a-form-item>
           </a-form>
-        </a-card>
+        </SettingsSection>
       </a-col>
 
       <!-- 显示设置 -->
       <a-col :xs="24" :lg="12">
-        <a-card title="显示设置" class="settings-card">
-          <template #extra>
-            <EyeOutlined />
-          </template>
-          
+        <SettingsSection
+          title="显示设置"
+          icon="EyeOutlined"
+          @save="saveDisplaySettings"
+        >
           <a-form layout="vertical" :model="displaySettings">
             <a-form-item label="主题">
               <a-select v-model:value="displaySettings.theme" style="width: 100%;">
@@ -524,23 +512,24 @@ onMounted(() => {
             <a-form-item label="紧凑模式">
               <a-switch v-model:checked="displaySettings.compactMode" />
             </a-form-item>
-            
-            <a-form-item>
-              <a-button type="primary" @click="saveDisplaySettings">
-                保存显示设置
-              </a-button>
-            </a-form-item>
           </a-form>
-        </a-card>
+        </SettingsSection>
       </a-col>
 
       <!-- 数据管理 -->
       <a-col :xs="24" :lg="12">
-        <a-card title="数据管理" class="settings-card">
-          <template #extra>
-            <DatabaseOutlined />
-          </template>
-          
+        <SettingsSection
+          title="数据管理"
+          icon="DatabaseOutlined"
+          @save="saveDataSettings"
+          @export="exportData"
+          @import="importData"
+          @clear="clearAllData"
+          @reset="resetSettings"
+          :export-loading="importExportState.exporting"
+          :import-loading="importExportState.importing"
+          :show-data-operations="true"
+        >
           <a-form layout="vertical" :model="dataSettings">
             <a-form-item label="自动备份">
               <a-switch v-model:checked="dataSettings.autoBackup" />
@@ -570,65 +559,8 @@ onMounted(() => {
             <a-form-item label="云同步">
               <a-switch v-model:checked="dataSettings.syncEnabled" />
             </a-form-item>
-            
-            <a-form-item>
-              <a-button type="primary" @click="saveDataSettings">
-                保存数据设置
-              </a-button>
-            </a-form-item>
           </a-form>
-          
-          <a-divider />
-          
-          <!-- 数据操作 -->
-          <div class="data-operations">
-            <h4>数据操作</h4>
-            
-            <a-space direction="vertical" style="width: 100%;">
-              <a-button
-                type="primary"
-                @click="exportData"
-                :loading="importExportState.exporting"
-                block
-              >
-                <DownloadOutlined />
-                导出数据
-              </a-button>
-              
-              <a-upload
-                :before-upload="() => false"
-                @change="handleFileUpload"
-                accept=".json"
-                :show-upload-list="false"
-              >
-                <a-button
-                  :loading="importExportState.importing"
-                  block
-                >
-                  <UploadOutlined />
-                  导入数据
-                </a-button>
-              </a-upload>
-              
-              <a-button
-                danger
-                @click="clearAllData"
-                block
-              >
-                <DeleteOutlined />
-                清空所有数据
-              </a-button>
-              
-              <a-button
-                @click="resetSettings"
-                block
-              >
-                <SettingOutlined />
-                重置设置
-              </a-button>
-            </a-space>
-          </div>
-        </a-card>
+        </SettingsSection>
       </a-col>
     </a-row>
   </div>
