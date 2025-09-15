@@ -1,5 +1,37 @@
 # RESTful API 设计
 
+## 0. 公共说明
+
+### 0.1 响应格式
+所有API都遵循统一的响应格式：
+
+成功响应：
+```json
+{
+  "success": true,
+  "data": {
+    // 具体数据
+  }
+}
+```
+
+错误响应：
+```json
+{
+  "success": false,
+  "error": {
+    "code": "string",
+    "message": "string"
+  }
+}
+```
+
+### 0.2 认证
+需要认证的接口必须在请求头中包含：
+```
+Authorization: Bearer <token>
+```
+
 ## 1. 认证相关接口
 
 ### 1.1 用户注册
@@ -447,7 +479,239 @@
   }
   ```
 
-## 7. 错误响应格式
+## 7. 标签管理接口
+
+### 7.1 获取所有标签
+- **URL**: `GET /api/tags`
+- **响应**:
+  ```json
+  {
+    "success": true,
+    "data": [
+      {
+        "id": "number",
+        "name": "string",
+        "description": "string",
+        "createdAt": "date"
+      }
+    ]
+  }
+  ```
+
+### 7.2 获取标签详情
+- **URL**: `GET /api/tags/{id}`
+- **响应**:
+  ```json
+  {
+    "success": true,
+    "data": {
+      "id": "number",
+      "name": "string",
+      "description": "string",
+      "createdAt": "date"
+    }
+  }
+  ```
+
+### 7.3 创建标签
+- **URL**: `POST /api/tags`
+- **请求参数**:
+  ```json
+  {
+    "name": "string",
+    "description": "string"
+  }
+  ```
+- **响应**:
+  ```json
+  {
+    "success": true,
+    "data": {
+      "id": "number",
+      "name": "string",
+      "description": "string",
+      "createdAt": "date"
+    }
+  }
+  ```
+
+## 8. 学科管理接口
+
+### 8.1 获取所有学科
+- **URL**: `GET /api/subjects`
+- **响应**:
+  ```json
+  {
+    "success": true,
+    "data": [
+      {
+        "id": "number",
+        "name": "string",
+        "description": "string",
+        "createdAt": "date"
+      }
+    ]
+  }
+  ```
+
+### 8.2 获取学科详情
+- **URL**: `GET /api/subjects/{id}`
+- **响应**:
+  ```json
+  {
+    "success": true,
+    "data": {
+      "id": "number",
+      "name": "string",
+      "description": "string",
+      "createdAt": "date"
+    }
+  }
+  ```
+
+### 8.3 创建学科
+- **URL**: `POST /api/subjects`
+- **请求参数**:
+  ```json
+  {
+    "name": "string",
+    "description": "string"
+  }
+  ```
+- **响应**:
+  ```json
+  {
+    "success": true,
+    "data": {
+      "id": "number",
+      "name": "string",
+      "description": "string",
+      "createdAt": "date"
+    }
+  }
+  ```
+
+## 9. 题型管理接口
+
+### 9.1 获取所有题型
+- **URL**: `GET /api/question-types`
+- **响应**:
+  ```json
+  {
+    "success": true,
+    "data": [
+      {
+        "id": "number",
+        "typeName": "string",
+        "description": "string",
+        "createdAt": "date"
+      }
+    ]
+  }
+  ```
+
+### 9.2 获取题型详情
+- **URL**: `GET /api/question-types/{id}`
+- **响应**:
+  ```json
+  {
+    "success": true,
+    "data": {
+      "id": "number",
+      "typeName": "string",
+      "description": "string",
+      "createdAt": "date"
+    }
+  }
+  ```
+
+### 9.3 创建题型
+- **URL**: `POST /api/question-types`
+- **请求参数**:
+  ```json
+  {
+    "typeName": "string",
+    "description": "string"
+  }
+  ```
+- **响应**:
+  ```json
+  {
+    "success": true,
+    "data": {
+      "id": "number",
+      "typeName": "string",
+      "description": "string",
+      "createdAt": "date"
+    }
+  }
+  ```
+
+## 10. 用户管理接口
+
+### 10.1 获取所有用户
+- **URL**: `GET /api/users`
+- **响应**:
+  ```json
+  {
+    "success": true,
+    "data": [
+      {
+        "id": "number",
+        "username": "string",
+        "email": "string",
+        "avatarUrl": "string",
+        "createdAt": "date",
+        "updatedAt": "date"
+      }
+    ]
+  }
+  ```
+
+### 10.2 获取用户详情
+- **URL**: `GET /api/users/{id}`
+- **响应**:
+  ```json
+  {
+    "success": true,
+    "data": {
+      "id": "number",
+      "username": "string",
+      "email": "string",
+      "avatarUrl": "string",
+      "createdAt": "date",
+      "updatedAt": "date"
+    }
+  }
+  ```
+
+### 10.3 创建用户
+- **URL**: `POST /api/users`
+- **请求参数**:
+  ```json
+  {
+    "username": "string",
+    "email": "string",
+    "password": "string",
+    "avatarUrl": "string"
+  }
+  ```
+- **响应**:
+  ```json
+  {
+    "success": true,
+    "data": {
+      "id": "number",
+      "username": "string",
+      "email": "string",
+      "avatarUrl": "string",
+      "createdAt": "date",
+      "updatedAt": "date"
+    }
+  }
+  ```
+
+## 11. 错误响应格式
 
 所有API在出错时都返回统一的错误格式：
 ```json

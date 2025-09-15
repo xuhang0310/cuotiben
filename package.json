@@ -19,6 +19,7 @@
     "@traptitech/markdown-it-katex": "^3.6.0",
     "@vueuse/core": "^9.13.0",
     "ant-design-vue": "^4.2.6",
+    "axios": "^1.12.2",
     "highlight.js": "^11.11.1",
     "html2canvas": "^1.4.1",
     "katex": "^0.16.22",

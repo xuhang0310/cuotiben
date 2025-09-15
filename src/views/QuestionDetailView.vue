@@ -17,6 +17,7 @@ import DifficultyTag from '@/components/DifficultyTag.vue'
 import SubjectTag from '@/components/SubjectTag.vue'
 import FavoriteButton from '@/components/FavoriteButton.vue'
 import PracticeStats from '@/components/PracticeStats.vue'
+import { getQuestionById } from '@/mock/questions'
 
 const route = useRoute()
 const router = useRouter()
@@ -36,7 +37,7 @@ const questionId = computed(() => route.params.id as string)
 const fetchQuestionData = async () => {
   loading.value = true
   try {
-    const questionData = questionStore.getQuestionById(questionId.value)
+    const questionData = await getQuestionById(questionId.value)
     if (questionData) {
       question.value = questionData
       // 获取相关题目
@@ -214,11 +215,21 @@ const getAIRelatedConcepts = () => {
 }
 
 // 切换收藏状态
-const toggleFavorite = () => {
+const toggleFavorite = async () => {
   if (!question.value) return
   
-  const isFavorite = questionStore.toggleFavorite(question.value.id)
-  message.success(isFavorite ? '已添加到收藏' : '已取消收藏')
+  try {
+    const updatedQuestion = await questionStore.toggleFavorite(question.value.id)
+    if (updatedQuestion) {
+      question.value.isFavorite = updatedQuestion.isFavorite
+      message.success(updatedQuestion.isFavorite ? '已添加到收藏' : '已取消收藏')
+    } else {
+      message.error('操作失败')
+    }
+  } catch (error) {
+    console.error('切换收藏状态失败:', error)
+    message.error('操作失败')
+  }
 }
 
 // 返回列表页

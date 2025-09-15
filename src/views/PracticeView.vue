@@ -16,6 +16,7 @@ import { message, Skeleton } from 'ant-design-vue'
 import DifficultyTag from '@/components/DifficultyTag.vue'
 import SubjectTag from '@/components/SubjectTag.vue'
 import FavoriteButton from '@/components/FavoriteButton.vue'
+import { practiceAPI } from '@/services/api'
 
 const questionStore = useQuestionStore()
 
@@ -130,50 +131,47 @@ const stopTimer = () => {
 }
 
 // 获取练习题目
-const getPracticeQuestions = () => {
-  let questions: Question[] = []
-  
-  switch (practiceConfig.value.mode) {
-    case 'all':
-      questions = [...questionStore.questions]
-      break
-    case 'wrong':
-      questions = [...questionStore.wrongQuestions]
-      break
-    case 'favorite':
-      questions = [...questionStore.favoriteQuestions]
-      break
-    case 'random':
-      questions = [...questionStore.questions]
-      break
+const getPracticeQuestions = async () => {
+  try {
+    const response = await practiceAPI.startPractice({
+      mode: practiceConfig.value.mode,
+      count: practiceConfig.value.count,
+      subject: practiceConfig.value.subject,
+      difficulty: practiceConfig.value.difficulty
+    })
+    
+    if (response.success) {
+      // 转换后端返回的数据格式为前端使用的格式
+      return response.data.practiceQuestions.map((question: any) => ({
+        id: question.id.toString(),
+        title: question.title,
+        content: question.content,
+        options: question.options || [],
+        correctAnswer: question.correctAnswer,
+        explanation: question.explanation,
+        difficulty: question.difficulty,
+        subject: question.subject,
+        tags: question.tags || [],
+        createdAt: new Date(question.createdAt),
+        updatedAt: new Date(question.updatedAt),
+        practiceCount: question.practiceCount || 0,
+        correctCount: question.correctCount || 0,
+        lastPracticeAt: question.lastPracticeAt ? new Date(question.lastPracticeAt) : undefined,
+        isFavorite: question.isFavorite
+      }))
+    } else {
+      throw new Error(response.error?.message || '获取练习题目失败')
+    }
+  } catch (error) {
+    console.error('获取练习题目失败:', error)
+    message.error('获取练习题目失败')
+    return []
   }
-  
-  // 科目筛选
-  if (practiceConfig.value.subject) {
-    questions = questions.filter(q => q.subject === practiceConfig.value.subject)
-  }
-  
-  // 难度筛选
-  if (practiceConfig.value.difficulty) {
-    questions = questions.filter(q => q.difficulty === practiceConfig.value.difficulty)
-  }
-  
-  // 随机打乱
-  if (practiceConfig.value.mode === 'random') {
-    questions = questions.sort(() => Math.random() - 0.5)
-  }
-  
-  // 限制数量
-  if (practiceConfig.value.count > 0) {
-    questions = questions.slice(0, practiceConfig.value.count)
-  }
-  
-  return questions
 }
 
 // 开始练习
-const startPractice = () => {
-  const questions = getPracticeQuestions()
+const startPractice = async () => {
+  const questions = await getPracticeQuestions()
   
   if (questions.length === 0) {
     message.warning('没有找到符合条件的题目')
@@ -190,7 +188,7 @@ const startPractice = () => {
 }
 
 // 提交答案
-const submitAnswer = () => {
+const submitAnswer = async () => {
   if (!currentQuestion.value || !userAnswer.value.trim()) {
     message.warning('请输入答案')
     return
@@ -198,26 +196,41 @@ const submitAnswer = () => {
   
   stopTimer()
   
-  const isCorrect = userAnswer.value.trim() === currentQuestion.value.correctAnswer
-  const questionTimeSpent = timeSpent.value
-  
-  // 记录结果
-  practiceResults.value.push({
-    questionId: currentQuestion.value.id,
-    userAnswer: userAnswer.value.trim(),
-    isCorrect,
-    timeSpent: questionTimeSpent
-  })
-  
-  // 更新题目统计
-  questionStore.recordPractice(currentQuestion.value.id, userAnswer.value.trim(), questionTimeSpent)
-  
-  showAnswer.value = true
-  
-  if (isCorrect) {
-    message.success('回答正确！')
-  } else {
-    message.error('回答错误')
+  try {
+    const response = await practiceAPI.submitAnswer({
+      questionId: currentQuestion.value.id,
+      userAnswer: userAnswer.value.trim(),
+      timeSpent: timeSpent.value
+    })
+    
+    if (response.success) {
+      const isCorrect = response.data.isCorrect
+      const questionTimeSpent = timeSpent.value
+      
+      // 记录结果
+      practiceResults.value.push({
+        questionId: currentQuestion.value.id,
+        userAnswer: userAnswer.value.trim(),
+        isCorrect,
+        timeSpent: questionTimeSpent
+      })
+      
+      // 更新题目统计
+      questionStore.recordPractice(currentQuestion.value.id, userAnswer.value.trim(), questionTimeSpent)
+      
+      showAnswer.value = true
+      
+      if (isCorrect) {
+        message.success('回答正确！')
+      } else {
+        message.error('回答错误')
+      }
+    } else {
+      throw new Error(response.error?.message || '提交答案失败')
+    }
+  } catch (error) {
+    console.error('提交答案失败:', error)
+    message.error('提交答案失败')
   }
 }
 
@@ -252,9 +265,23 @@ const restartPractice = () => {
 }
 
 // 切换收藏状态
-const toggleFavorite = (questionId: string) => {
-  const isFavorite = questionStore.toggleFavorite(questionId)
-  message.success(isFavorite ? '已添加到收藏' : '已取消收藏')
+const toggleFavorite = async (questionId: string) => {
+  try {
+    const response = await questionAPI.toggleFavorite(questionId)
+    if (response.success) {
+      const isFavorite = response.data.isFavorite
+      const question = practiceQuestions.value.find(q => q.id === questionId)
+      if (question) {
+        question.isFavorite = isFavorite
+      }
+      message.success(isFavorite ? '已添加到收藏' : '已取消收藏')
+    } else {
+      throw new Error(response.error?.message || '操作失败')
+    }
+  } catch (error) {
+    console.error('切换收藏状态失败:', error)
+    message.error('操作失败')
+  }
 }
 
 // 格式化时间

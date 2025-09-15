@@ -11,6 +11,7 @@ import {
   CheckCircleOutlined,
   CloseCircleOutlined
 } from '@ant-design/icons-vue'
+import { statisticsAPI } from '@/services/api'
 
 const questionStore = useQuestionStore()
 
@@ -30,6 +31,28 @@ const subjectOptions = computed(() => {
   const subjects = Array.from(new Set(questionStore.questions.map(q => q.subject)))
   return [{ label: '全部科目', value: '' }, ...subjects.map(subject => ({ label: subject, value: subject }))]
 })
+
+// 获取统计数据
+const fetchStatistics = async () => {
+  try {
+    const response = await statisticsAPI.getStatistics({
+      timeRange: timeRange.value,
+      subject: selectedSubject.value
+    })
+    
+    if (response.success) {
+      // 这里可以根据后端返回的数据更新统计信息
+      // 暂时使用现有的计算逻辑
+      return response.data
+    } else {
+      throw new Error(response.error?.message || '获取统计数据失败')
+    }
+  } catch (error) {
+    console.error('获取统计数据失败:', error)
+    // 出错时使用现有的计算逻辑
+    return null
+  }
+}
 
 // 获取时间范围的开始时间
 const getTimeRangeStart = () => {
