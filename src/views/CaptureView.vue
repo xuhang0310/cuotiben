@@ -3,7 +3,7 @@ import { ref, reactive } from 'vue'
 import { message, Modal } from 'ant-design-vue'
 import html2canvas from 'html2canvas'
 import type { UploadProps } from 'ant-design-vue'
-import { ocrAPI } from '@/services/api'
+import { ocrAPI } from '../services/api'
 
 // 图片状态
 const imageUrl = ref<string>('')
@@ -44,11 +44,27 @@ const handleUpload = (info: any) => {
     loading.value = true
     return
   }
+  
   if (info.file.status === 'done') {
-    // 模拟上传成功，直接进入下一步
+    // 处理上传成功的响应
     loading.value = false
-    // 使用模拟图片URL
-    imageUrl.value = 'https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png'
+    
+    // 从响应中获取图片URL（根据实际API响应结构调整）
+    const response = info.file.response
+    if (response && response.data && response.data.path) {
+      // 如果API返回了图片路径，构造完整的图片URL
+      // 假设基础URL是 https://lgbv3.linggongbang.cn/
+      imageUrl.value = `https://lgbv3.linggongbang.cn/${response.data.path}`
+    } else if (info.file.originFileObj) {
+      // 如果没有返回路径，使用本地文件创建预览
+      getBase64(info.file.originFileObj, (base64Url: string) => {
+        imageUrl.value = base64Url
+      })
+    } else {
+      // 备用方案：使用模拟图片URL
+      imageUrl.value = 'https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png'
+    }
+    
     currentStep.value = 1 // 进入图片编辑步骤
     message.success('上传成功!')
   } else if (info.file.status === 'error') {
@@ -84,15 +100,16 @@ const recognizeImage = async () => {
     // formData.append('image', file)
     
     // 调用OCR API
-    const response = await ocrAPI.recognize(formData)
+    const response: any = await ocrAPI.recognize(formData)
     
-    if (response.success) {
+    // 检查响应是否成功
+    if (response && response.success) {
       recognizedText.value = response.data.recognizedText
       editedText.value = response.data.recognizedText
       currentStep.value = 2 // 进入文本编辑步骤
       message.success('识别成功!')
     } else {
-      throw new Error(response.error?.message || 'OCR识别失败')
+      throw new Error(response?.error?.message || 'OCR识别失败')
     }
   } catch (error) {
     console.error('OCR识别失败:', error)
@@ -113,18 +130,19 @@ const saveQuestion = async () => {
     message.loading('保存中...', 0)
     
     // 调用保存题目API
-    const response = await ocrAPI.saveQuestion({
+    const response: any = await ocrAPI.saveQuestion({
       content: editedText.value
     })
     
-    if (response.success) {
+    // 检查响应是否成功
+    if (response && response.success) {
       message.destroy()
       message.success('保存成功!')
       // 重置状态，准备下一次拍照
       resetState()
     } else {
       message.destroy()
-      throw new Error(response.error?.message || '保存失败')
+      throw new Error(response?.error?.message || '保存失败')
     }
   } catch (error) {
     message.destroy()
@@ -183,11 +201,11 @@ const confirmCancel = () => {
       <!-- 步骤1: 上传图片 -->
       <div v-if="currentStep === 0" class="upload-container">
         <a-upload
-          name="avatar"
+          name="file"
           list-type="picture-card"
           class="avatar-uploader"
           :show-upload-list="false"
-          action="https://run.mocky.io/v3/435e224c-44fb-4773-9faf-380c5e6a2188"
+          action="https://lgbv3.linggongbang.cn/lgb/oss/workOrderUpload"
           :before-upload="beforeUpload"
           @change="handleUpload"
         >
@@ -238,7 +256,7 @@ const confirmCancel = () => {
       <!-- 步骤3: 识别结果 -->
       <div v-if="currentStep === 2" class="result-container">
         <a-textarea
-          v-model:value="editedText"
+          v-model="editedText"
           placeholder="识别结果将显示在这里，您可以进行编辑"
           :rows="10"
           :auto-size="{ minRows: 10, maxRows: 20 }"
