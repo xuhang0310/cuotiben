@@ -114,12 +114,7 @@ const filteredQuestions = computed(() => {
   return questionsData
 })
 
-// 分页后的题目列表
-const paginatedQuestions = computed(() => {
-  const start = (props.pagination.current - 1) * props.pagination.pageSize
-  const end = start + props.pagination.pageSize
-  return filteredQuestions.value.slice(start, end)
-})
+
 
 // 计算正确率
 const getAccuracy = (question: Question) => {
@@ -172,6 +167,19 @@ const updateSearchForm = (field: keyof Props['searchForm'], value: any) => {
 const updatePagination = (field: keyof Props['pagination'], value: any) => {
   emit('update:pagination', { ...props.pagination, [field]: value })
 }
+
+// 表格分页变化处理函数
+const handleTableChange = (pagination: any, filters: any, sorter: any) => {
+  // 更新分页信息并触发搜索
+  const newPagination = {
+    ...props.pagination,
+    current: pagination.current,
+    pageSize: pagination.pageSize
+  }
+  emit('update:pagination', newPagination)
+  emit('search')
+}
+
 </script>
 
 <template>
@@ -181,7 +189,7 @@ const updatePagination = (field: keyof Props['pagination'], value: any) => {
       <a-form layout="inline" :model="searchForm">
         <a-form-item>
           <a-input
-            v-model:value="searchForm.keyword"
+            v-model="searchForm.keyword"
             placeholder="搜索题目标题或内容"
             style="width: 250px;"
             @change="handleSearch"
@@ -194,11 +202,11 @@ const updatePagination = (field: keyof Props['pagination'], value: any) => {
         
         <a-form-item>
           <a-select
-            v-model:value="searchForm.subject"
+            v-model="searchForm.subject"
             placeholder="选择科目"
             style="width: 120px;"
             allow-clear
-            @change="(val) => updateSearchForm('subject', val)"
+            @change="updateSearchForm('subject', $event)"
           >
             <a-select-option
               v-for="option in subjectOptions"
@@ -212,11 +220,11 @@ const updatePagination = (field: keyof Props['pagination'], value: any) => {
         
         <a-form-item>
           <a-select
-            v-model:value="searchForm.difficulty"
+            v-model="searchForm.difficulty"
             placeholder="选择难度"
             style="width: 100px;"
             allow-clear
-            @change="(val) => updateSearchForm('difficulty', val)"
+            @change="updateSearchForm('difficulty', $event)"
           >
             <a-select-option
               v-for="option in difficultyOptions"
@@ -230,8 +238,8 @@ const updatePagination = (field: keyof Props['pagination'], value: any) => {
         
         <a-form-item>
           <a-checkbox 
-            v-model:checked="searchForm.isFavorite"
-            @change="(e) => updateSearchForm('isFavorite', e.target.checked)"
+            v-model="searchForm.isFavorite"
+            @change="updateSearchForm('isFavorite', $event.target.checked)"
           >
             只看收藏
           </a-checkbox>
@@ -258,12 +266,12 @@ const updatePagination = (field: keyof Props['pagination'], value: any) => {
           <a-col :xs="24" :sm="12" :md="8">
             <a-form-item label="标签筛选">
               <a-select
-                v-model:value="searchForm.tags"
+                v-model="searchForm.tags"
                 mode="multiple"
                 placeholder="选择标签"
                 style="width: 100%"
                 allow-clear
-                @change="(val) => updateSearchForm('tags', val)"
+                @change="updateSearchForm('tags', $event)"
               >
                 <a-select-option
                   v-for="tag in allTags"
@@ -279,10 +287,10 @@ const updatePagination = (field: keyof Props['pagination'], value: any) => {
           <a-col :xs="24" :sm="12" :md="8">
             <a-form-item label="创建日期">
               <a-range-picker
-                v-model:value="searchForm.dateRange"
+                v-model="searchForm.dateRange"
                 style="width: 100%"
                 format="YYYY-MM-DD"
-                @change="(val) => updateSearchForm('dateRange', val)"
+                @change="updateSearchForm('dateRange', $event)"
               />
             </a-form-item>
           </a-col>
@@ -290,11 +298,11 @@ const updatePagination = (field: keyof Props['pagination'], value: any) => {
           <a-col :xs="24" :sm="12" :md="8">
             <a-form-item label="练习状态">
               <a-select
-                v-model:value="searchForm.practiceStatus"
+                v-model="searchForm.practiceStatus"
                 placeholder="选择练习状态"
                 style="width: 100%"
                 allow-clear
-                @change="(val) => updateSearchForm('practiceStatus', val)"
+                @change="updateSearchForm('practiceStatus', $event)"
               >
                 <a-select-option value="all">全部</a-select-option>
                 <a-select-option value="practiced">已练习</a-select-option>
@@ -371,14 +379,11 @@ const updatePagination = (field: keyof Props['pagination'], value: any) => {
             fixed: 'right'
           }
         ]"
-        :data-source="paginatedQuestions"
+        :data-source="filteredQuestions"
         :pagination="pagination"
         :scroll="{ x: 800 }"
         row-key="id"
-        @change="(pagination) => {
-          updatePagination('current', pagination.current)
-          updatePagination('pageSize', pagination.pageSize)
-        }"
+        @change="handleTableChange"
       >
         <template #bodyCell="{ column, record }">
           <template v-if="column.key === 'title'">

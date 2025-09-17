@@ -1,15 +1,18 @@
 <script setup lang="ts">
-import { ref, computed, reactive, onMounted } from 'vue'
+import { ref, computed, reactive, onMounted, watch } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
-import { fetchQuestions, addQuestion, updateQuestion, deleteQuestion as deleteMockQuestion, type Question } from '@/mock/questions'
+import { questionAPI } from '../services/api'
 import { message } from 'ant-design-vue'
-import QuestionTable from '@/components/QuestionTable.vue'
+import { QuestionTable } from '../components'
 
 const router = useRouter()
 const route = useRoute()
 
 // 题目数据
-const questions = ref<Question[]>([])
+const questions = ref<any[]>([])
+
+// 加载状态
+const loading = ref(false)
 
 // 高级筛选显示状态
 const showAdvancedFilter = ref(false)
@@ -45,7 +48,9 @@ const subjectOptions = computed(() => {
 const allTags = computed(() => {
   const tagsSet = new Set<string>()
   questions.value.forEach(q => {
-    q.tags.forEach(tag => tagsSet.add(tag))
+    if (q.tags && Array.isArray(q.tags)) {
+      q.tags.forEach((tag: string) => tagsSet.add(tag))
+    }
   })
   return Array.from(tagsSet)
 })
@@ -59,7 +64,7 @@ const difficultyOptions = [
 
 // 弹窗状态
 const modalVisible = ref(false)
-const editingQuestion = ref<Question | null>(null)
+const editingQuestion = ref<any | null>(null)
 const isEditing = computed(() => !!editingQuestion.value)
 
 // 表单数据
@@ -74,14 +79,6 @@ const formData = reactive({
   tags: [] as string[]
 })
 
-// 表单验证规则
-const formRules = {
-  title: [{ required: true, message: '请输入题目标题', trigger: 'blur' }],
-  content: [{ required: true, message: '请输入题目内容', trigger: 'blur' }],
-  correctAnswer: [{ required: true, message: '请输入正确答案', trigger: 'blur' }],
-  subject: [{ required: true, message: '请选择科目', trigger: 'change' }]
-}
-
 // 重置搜索
 const resetSearch = () => {
   Object.assign(searchForm, {
@@ -94,21 +91,22 @@ const resetSearch = () => {
     practiceStatus: ''
   })
   pagination.current = 1
+  loadQuestions()
 }
 
 // 打开添加/编辑弹窗
-const openModal = (question?: Question) => {
+const openModal = (question?: any) => {
   if (question) {
     editingQuestion.value = question
     Object.assign(formData, {
-      title: question.title,
-      content: question.content,
-      options: question.options || ['', '', '', ''],
-      correctAnswer: question.correctAnswer,
+      title: question.title || '',
+      content: question.content || '',
+      options: question.options && Array.isArray(question.options) ? [...question.options] : ['', '', '', ''],
+      correctAnswer: question.correctAnswer || '',
       explanation: question.explanation || '',
-      difficulty: question.difficulty,
-      subject: question.subject,
-      tags: [...question.tags]
+      difficulty: question.difficulty || 'medium',
+      subject: question.subject || '',
+      tags: question.tags && Array.isArray(question.tags) ? [...question.tags] : []
     })
   } else {
     editingQuestion.value = null
@@ -136,31 +134,28 @@ const closeModal = () => {
 const saveQuestion = async () => {
   try {
     if (isEditing.value && editingQuestion.value) {
-      const updatedQuestion = await updateQuestion(editingQuestion.value.id, {
+      const updatedQuestion = await questionAPI.updateQuestion(editingQuestion.value.id, {
         title: formData.title,
         content: formData.content,
-        options: formData.options.filter(opt => opt.trim()),
+        options: formData.options.filter((opt: string) => opt.trim()),
         correctAnswer: formData.correctAnswer,
         explanation: formData.explanation,
         difficulty: formData.difficulty,
         subject: formData.subject,
         tags: formData.tags
       })
+      
       if (updatedQuestion) {
-        // 更新本地数据
-        const index = questions.value.findIndex(q => q.id === editingQuestion.value?.id)
-        if (index !== -1) {
-          questions.value[index] = updatedQuestion
-        }
         message.success('题目更新成功')
+        loadQuestions() // 重新加载数据
       } else {
         message.error('题目更新失败')
       }
     } else {
-      const newQuestion = await addQuestion({
+      const newQuestion = await questionAPI.createQuestion({
         title: formData.title,
         content: formData.content,
-        options: formData.options.filter(opt => opt.trim()),
+        options: formData.options.filter((opt: string) => opt.trim()),
         correctAnswer: formData.correctAnswer,
         explanation: formData.explanation,
         difficulty: formData.difficulty,
@@ -168,9 +163,9 @@ const saveQuestion = async () => {
         tags: formData.tags,
         isFavorite: false
       })
-      // 添加到本地数据
-      questions.value.push(newQuestion)
+      
       message.success('题目添加成功')
+      loadQuestions() // 重新加载数据
     }
     closeModal()
   } catch (error) {
@@ -182,14 +177,9 @@ const saveQuestion = async () => {
 // 删除题目
 const handleDeleteQuestion = async (id: string) => {
   try {
-    const success = await deleteMockQuestion(id)
-    if (success) {
-      // 从本地数据中移除
-      questions.value = questions.value.filter(q => q.id !== id)
-      message.success('题目删除成功')
-    } else {
-      message.error('题目删除失败')
-    }
+    await questionAPI.deleteQuestion(id)
+    message.success('题目删除成功')
+    loadQuestions() // 重新加载数据
   } catch (error) {
     console.error('删除题目失败:', error)
     message.error('删除题目失败')
@@ -199,18 +189,9 @@ const handleDeleteQuestion = async (id: string) => {
 // 切换收藏状态
 const handleToggleFavorite = async (id: string) => {
   try {
-    const question = questions.value.find(q => q.id === id)
-    if (question) {
-      const updatedQuestion = await updateQuestion(id, {
-        isFavorite: !question.isFavorite
-      })
-      if (updatedQuestion) {
-        question.isFavorite = updatedQuestion.isFavorite
-        message.success(updatedQuestion.isFavorite ? '已添加到收藏' : '已取消收藏')
-      } else {
-        message.error('操作失败')
-      }
-    }
+    await questionAPI.toggleFavorite(id)
+    message.success('操作成功')
+    loadQuestions() // 重新加载数据
   } catch (error) {
     console.error('切换收藏状态失败:', error)
     message.error('操作失败')
@@ -236,15 +217,55 @@ const checkRouteQuery = () => {
 // 获取题目数据
 const loadQuestions = async () => {
   try {
-    const data = await fetchQuestions()
-    questions.value = data
-    // 更新分页总数
-    pagination.total = data.length
+    loading.value = true
+    
+    // 构造查询参数
+    const params: any = {
+      page: pagination.current,
+      limit: pagination.pageSize
+    }
+    
+    // 添加搜索和筛选条件
+    if (searchForm.keyword) params.keyword = searchForm.keyword
+    if (searchForm.subject) params.subject = searchForm.subject
+    if (searchForm.difficulty) params.difficulty = searchForm.difficulty
+    if (searchForm.isFavorite) params.isFavorite = searchForm.isFavorite
+    if (searchForm.tags && searchForm.tags.length > 0) params.tags = searchForm.tags.join(',')
+    if (searchForm.practiceStatus) params.practiceStatus = searchForm.practiceStatus
+    
+    // 添加日期范围
+    if (searchForm.dateRange && searchForm.dateRange.length === 2) {
+      params.startDate = searchForm.dateRange[0]
+      params.endDate = searchForm.dateRange[1]
+    }
+    
+    const response: any = await questionAPI.getAllQuestions(params)
+    
+    if (response && response.success) {
+      questions.value = response.data.questions || []
+      pagination.total = response.data.total || 0
+    } else {
+      questions.value = []
+      pagination.total = 0
+      message.error('获取题目数据失败')
+    }
   } catch (error) {
     console.error('获取题目数据失败:', error)
+    questions.value = []
+    pagination.total = 0
     message.error('获取题目数据失败')
+  } finally {
+    loading.value = false
   }
 }
+
+// 监听路由变化
+watch(
+  () => route.query,
+  () => {
+    checkRouteQuery()
+  }
+)
 
 // 生命周期钩子
 onMounted(() => {
@@ -263,9 +284,9 @@ onMounted(() => {
       :all-tags="allTags"
       :difficulty-options="difficultyOptions"
       :show-advanced-filter="showAdvancedFilter"
-      @update:searchForm="(val: typeof searchForm) => searchForm = val"
-      @update:pagination="(val: typeof pagination) => pagination = val"
-      @update:showAdvancedFilter="(val: boolean) => showAdvancedFilter = val"
+      @update:searchForm="(val) => Object.assign(searchForm, val)"
+      @update:pagination="(val) => Object.assign(pagination, val)"
+      @update:showAdvancedFilter="(val) => showAdvancedFilter = val"
       @search="loadQuestions"
       @resetSearch="resetSearch"
       @view="viewQuestionDetail"
@@ -277,7 +298,7 @@ onMounted(() => {
 
     <!-- 添加/编辑题目弹窗 -->
     <a-modal
-      v-model:open="modalVisible"
+      v-model="modalVisible"
       :title="isEditing ? '编辑题目' : '添加题目'"
       width="800px"
       @ok="saveQuestion"
