@@ -92,15 +92,17 @@ const cropImage = (cropData: any) => {
 
 // OCR识别图片
 const recognizeImage = async () => {
+  if (!imageUrl.value) {
+    message.warning('请先上传图片!')
+    return
+  }
+  
   recognizing.value = true
   try {
-    // 创建FormData对象
-    const formData = new FormData()
-    // 这里应该添加实际的图片文件，目前使用模拟数据
-    // formData.append('image', file)
-    
-    // 调用OCR API
-    const response: any = await ocrAPI.recognize(formData)
+    // 使用图片URL进行OCR识别
+    const response: any = await ocrAPI.recognizeFromUrl({
+      image_url: imageUrl.value
+    })
     
     // 检查响应是否成功
     if (response && response.success) {

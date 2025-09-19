@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
-import { fetchQuestions, type Question } from '@/mock/questions'
+import { questionAPI } from '@/services/api'
+import type { Question } from '@/stores/question'
 import QuestionCard from '@/components/QuestionCard.vue'
 
 // 搜索关键词
@@ -22,10 +23,34 @@ const loading = ref(false)
 const loadQuestions = async () => {
   loading.value = true
   try {
-    const data = await fetchQuestions()
-    questionsList.value = data
+    const response: any = await questionAPI.getAllQuestions()
+    if (response && response.success) {
+      // 转换API数据格式为前端Question类型
+      questionsList.value = response.data.questions.map((question: any) => ({
+        id: question.id.toString(),
+        title: question.title,
+        content: question.content,
+        questionType: question.questionType || '选择题',
+        options: question.options || [],
+        correctAnswer: question.correctAnswer,
+        explanation: question.explanation,
+        difficulty: question.difficulty,
+        subject: question.subject,
+        tags: question.tags || [],
+        createdAt: new Date(question.createdAt),
+        updatedAt: new Date(question.updatedAt),
+        practiceCount: question.practiceCount || 0,
+        correctCount: question.correctCount || 0,
+        lastPracticeAt: question.lastPracticeAt ? new Date(question.lastPracticeAt) : undefined,
+        isFavorite: question.isFavorite || false
+      }))
+    } else {
+      questionsList.value = []
+      console.error('获取题目数据失败:', response?.error?.message)
+    }
   } catch (error) {
     console.error('获取题目数据失败:', error)
+    questionsList.value = []
   } finally {
     loading.value = false
   }

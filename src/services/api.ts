@@ -2,7 +2,7 @@ import axios from 'axios'
 
 // 创建axios实例
 const api = axios.create({
-  baseURL: 'http://localhost:3001/api', // 后端API的基础URL
+  baseURL: 'http://localhost:8000/api', // 后端API的基础URL
   timeout: 10000,
   headers: {
     'Content-Type': 'application/json'
@@ -13,9 +13,10 @@ const api = axios.create({
 api.interceptors.request.use(
   (config) => {
     // 从localStorage获取token并添加到请求头
-    const token = localStorage.getItem('token')
+    const token = localStorage.getItem('access_token')
+    const tokenType = localStorage.getItem('token_type') || 'Bearer'
     if (token) {
-      config.headers.Authorization = `Bearer ${token}`
+      config.headers.Authorization = `${tokenType} ${token}`
     }
     return config
   },
@@ -32,7 +33,8 @@ api.interceptors.response.use(
   (error) => {
     if (error.response?.status === 401) {
       // token过期或无效，清除本地存储并跳转到登录页
-      localStorage.removeItem('token')
+      localStorage.removeItem('access_token')
+      localStorage.removeItem('token_type')
       localStorage.removeItem('user')
       window.location.href = '/login'
     }
@@ -47,8 +49,21 @@ export const authAPI = {
     api.post('/auth/register', data),
 
   // 用户登录
-  login: (data: { email: string; password: string }) => 
-    api.post('/auth/login', data),
+  login: (data: { email: string; password: string }): Promise<{
+    access_token: string;
+    token_type: string;
+  }> => {
+    // 创建URLSearchParams对象来发送form-urlencoded数据
+    const formData = new URLSearchParams()
+    formData.append('username', data.email) // 后端期望username字段，但前端使用email
+    formData.append('password', data.password)
+    
+    return api.post('/auth/login', formData, {
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded'
+      }
+    })
+  },
 
   // 获取当前用户信息
   getCurrentUser: () => 
@@ -59,7 +74,7 @@ export const authAPI = {
 export const questionAPI = {
   // 获取所有题目
   getAllQuestions: (params?: any) => 
-    api.get('/questions', { params }),
+    api.get('/questions/', { params }),
 
   // 根据ID获取题目
   getQuestionById: (id: string) => 
@@ -106,13 +121,17 @@ export const statisticsAPI = {
 
 // OCR相关API
 export const ocrAPI = {
-  // OCR识别
+  // OCR识别（文件上传）
   recognize: (formData: FormData) => 
     api.post('/ocr/recognize', formData, {
       headers: {
         'Content-Type': 'multipart/form-data'
       }
     }),
+
+  // OCR识别（通过图片URL）
+  recognizeFromUrl: (data: { image_url: string }) => 
+    api.post('/ocr/recognize-from-url', data),
 
   // 保存OCR识别的题目
   saveQuestion: (data: any) => 

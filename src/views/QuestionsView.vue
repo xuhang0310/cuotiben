@@ -3,7 +3,7 @@ import { ref, computed, reactive, onMounted, watch } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { questionAPI } from '../services/api'
 import { message } from 'ant-design-vue'
-import { QuestionTable } from '../components'
+import { QuestionTable, QuestionForm } from '../components'
 
 const router = useRouter()
 const route = useRoute()
@@ -240,7 +240,7 @@ const loadQuestions = async () => {
     }
     
     const response: any = await questionAPI.getAllQuestions(params)
-    
+    console.log('API响应:', response)
     if (response && response.success) {
       questions.value = response.data.questions || []
       pagination.total = response.data.total || 0
@@ -298,7 +298,7 @@ onMounted(() => {
 
     <!-- 添加/编辑题目弹窗 -->
     <a-modal
-      v-model="modalVisible"
+      v-model:open="modalVisible"
       :title="isEditing ? '编辑题目' : '添加题目'"
       width="800px"
       @ok="saveQuestion"

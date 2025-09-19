@@ -8,6 +8,7 @@ import { createI18n } from 'vue-i18n'
 
 import App from './App.vue'
 import router from './router'
+import { useAuthStore } from './stores/auth'
 
 // Import all components
 import * as components from './components'
@@ -28,7 +29,8 @@ const i18n = createI18n({
 
 const app = createApp(App)
 
-app.use(createPinia())
+const pinia = createPinia()
+app.use(pinia)
 app.use(router)
 app.use(Antd)
 app.use(i18n)
@@ -37,5 +39,9 @@ app.use(i18n)
 Object.entries(components).forEach(([name, component]) => {
   app.component(name, component)
 })
+
+// 在应用挂载前初始化认证状态
+const authStore = useAuthStore()
+authStore.initAuth()
 
 app.mount('#app')

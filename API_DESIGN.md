@@ -434,7 +434,7 @@ Authorization: Bearer <token>
 
 ## 6. 拍照录题接口
 
-### 6.1 OCR识别
+### 6.1 OCR识别（文件上传）
 - **URL**: `POST /api/ocr/recognize`
 - **请求头**: 
   - `Authorization: Bearer <token>`
@@ -451,7 +451,26 @@ Authorization: Bearer <token>
   }
   ```
 
-### 6.2 保存OCR识别的题目
+### 6.2 OCR识别（通过图片URL）
+- **URL**: `POST /api/ocr/recognize-from-url`
+- **请求头**: `Authorization: Bearer <token>`
+- **请求参数**:
+  ```json
+  {
+    "image_url": "string"
+  }
+  ```
+- **响应**:
+  ```json
+  {
+    "success": true,
+    "data": {
+      "recognizedText": "string"
+    }
+  }
+  ```
+
+### 6.3 保存OCR识别的题目
 - **URL**: `POST /api/ocr/save-question`
 - **请求头**: `Authorization: Bearer <token>`
 - **请求参数**:

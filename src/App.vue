@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { RouterView, useRoute, useRouter, type RouteRecordNormalized } from 'vue-router'
 import { ref, computed } from 'vue'
+import { BookOutlined } from '@ant-design/icons-vue'
 
 const route = useRoute()
 const router = useRouter()
@@ -20,6 +21,11 @@ const menuItems = computed(() => {
 // 当前选中的菜单项
 const selectedKeys = computed(() => [route.path])
 
+// 判断是否显示导航栏（登录页面不显示）
+const showNavigation = computed(() => {
+  return route.name !== 'login'
+})
+
 // 导航到指定路径
 const navigateTo = (path: string) => {
   router.push(path)
@@ -28,8 +34,8 @@ const navigateTo = (path: string) => {
 
 <template>
   <a-layout class="app-layout">
-    <!-- 顶部导航栏 -->
-    <a-layout-header class="app-header">
+    <!-- 顶部导航栏 - 仅在非登录页面显示 -->
+    <a-layout-header v-if="showNavigation" class="app-header">
       <!-- Logo区域 -->
       <div class="logo">
         <BookOutlined class="logo-icon" />
@@ -59,7 +65,7 @@ const navigateTo = (path: string) => {
     </a-layout-header>
     
     <!-- 页面内容 -->
-    <a-layout-content class="app-content">
+    <a-layout-content class="app-content" :class="{ 'no-header': !showNavigation }">
       <div class="content-wrapper">
         <RouterView />
       </div>
@@ -154,6 +160,10 @@ const navigateTo = (path: string) => {
   background: var(--background-color-light);
   overflow-x: hidden;
   transition: background-color var(--transition-base);
+}
+
+.app-content.no-header {
+  min-height: 100vh;
 }
 
 .content-wrapper {
